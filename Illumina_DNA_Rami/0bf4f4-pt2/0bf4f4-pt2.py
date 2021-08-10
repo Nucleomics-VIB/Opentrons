@@ -27,8 +27,8 @@ def run(ctx):
 
     if not 1 <= index_start_col <= 12:
         raise Exception("Enter an index start column 1-12")
-    if not 1 <= index_start_col <= 12:
-        raise Exception("Enter an index start column 1-12")
+    if not 1 <= tip_park_start_col <= 12:
+        raise Exception("Enter an tip_park start column 1-12")
 
     num_samp = int(num_samp)
     num_col = int(num_samp/8)
