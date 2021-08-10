@@ -9,7 +9,7 @@ from opentrons.types import Point
 
 
 metadata = {
-    'protocolName': 'Ilumina DNA Prep Part 2 - Post Tagmentation Cleanup',
+    'protocolName': 'Illumina DNA Prep Part 2 - Post Tagmentation Cleanup',
     'author': 'Rami Farawi <rami.farawi@opentrons.com>',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'

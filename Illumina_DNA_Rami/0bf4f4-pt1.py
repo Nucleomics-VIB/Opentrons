@@ -8,7 +8,7 @@ def get_values(*names):
 from opentrons.types import Point
 
 metadata = {
-    'protocolName': 'Ilumina DNA Prep Part 1 - Tagment DNA',
+    'protocolName': 'Illumina DNA Prep Part 1 - Tagment DNA',
     'author': 'Rami Farawi <rami.farawi@opentrons.com>',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'

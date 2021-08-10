@@ -10,7 +10,7 @@ from opentrons import protocol_api
 
 
 metadata = {
-    'protocolName': 'Ilumina DNA Prep Part 3 - Clean up Libraries',
+    'protocolName': 'Illumina DNA Prep Part 3 - Clean up Libraries',
     'author': 'Rami Farawi <rami.farawi@opentrons.com>',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'
