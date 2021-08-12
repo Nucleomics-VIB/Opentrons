@@ -1,0 +1,56 @@
+[
+    {
+        "type": "int",
+        "label": "number of samples",
+        "name": "num_samp",
+        "default": 16
+    },
+    {
+        "type": "int",
+        "label": "sample plate start column",
+        "name": "plate_A_start_col",
+        "default": 1
+    },
+    {
+        "type": "int",
+        "label": "plate B start column",
+        "name": "plate_B_start_col",
+        "default": 1
+    },
+    {
+        "type": "int",
+        "label": "plate C start column",
+        "name": "plate_C_start_col",
+        "default": 1
+    },    
+    {
+        "type": "int",
+        "label": "park tip box start column",
+        "name": "tip_park_start_col",
+        "default": 1
+    },
+    {
+        "type": "float",
+        "label": "height of aspiration",
+        "name": "asp_height",
+        "default": 1.0
+    },
+    {
+        "type": "float",
+        "label": "distance from side",
+        "name": "length_from_side",
+        "default": 2.0
+    },
+    {
+        "type": "str",
+        "label": "p20-multi mount",
+        "name": "m20_mount",
+        "default": "left"
+    },
+    {
+        "type": "str",
+        "label": "p300-multi mount",
+        "name": "m300_mount",
+        "default": "right"
+    }
+]
