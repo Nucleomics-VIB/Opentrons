@@ -260,4 +260,4 @@ def run(ctx):
         m20.mix(10, 18, dest_col)
         m20.drop_tip()
     
-    ctx.comment('\n All done, plate ready for protocol part-3 \n')
+    ctx.comment('\n All done, sample plate in position #1 is ready for protocol part-3 \n')
