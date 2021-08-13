@@ -11,10 +11,10 @@
 This protocol performs the 'Tagment DNA' section of the [Illumina DNA Library Prep protocol](https://www.illumina.com/products/by-type/sequencing-kits/library-prep-kits/nextera-dna-flex.html).
 
 Links:
-* [Dilute DNA Samples](./NC_Illumina_DNA_pt1) - (this potocol)
-* [Tagment DNA and Post Tagmentation Cleanup](./NC_Illumina_DNA_pt2)
+* [Dilute DNA Samples](../NC_Illumina_DNA_pt1) - (this potocol)
+* [Tagment DNA and Post Tagmentation Cleanup](../NC_Illumina_DNA_pt2)
 * Amplify Tagmented DNA using the lab thermocycler
-* [Cleanup Libraries](./NC_Illumina_DNA_pt3)
+* [Cleanup Libraries](../NC_Illumina_DNA_pt3)
 
 ---
 ![Materials Needed](https://s3.amazonaws.com/opentrons-protocol-library-website/custom-README-images/001-General+Headings/materials.png)
