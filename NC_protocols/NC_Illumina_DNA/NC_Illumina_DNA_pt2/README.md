@@ -56,7 +56,7 @@ reagent plate layout: **(the plate from Part-1 remains on deck for this protocol
 4. Set up your deck according to the deck map.
 5. Calibrate your labware, tiprack and pipette using the OT App. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
 6. Hit "Run".
-7. Transfer the plate to the thermocycler adn run the library amplification program.
+7. Transfer the plate to the thermocycler and run the library amplification program.
 8. Continue to Part-3 or store the plate for later resume.
 
 ### Additional Notes
