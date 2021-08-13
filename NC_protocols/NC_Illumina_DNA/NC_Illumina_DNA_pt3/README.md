@@ -12,7 +12,7 @@ This protocol performs the 'Tagment DNA' section of the [Illumina DNA Library Pr
 
 Links:
 * [Dilute DNA Samples and Tagment](../NC_Illumina_DNA_pt1)
-* [Tagment DNA and Post Tagmentation Cleanup](../NC_Illumina_DNA_pt2)
+* [Post Tagmentation Cleanup](../NC_Illumina_DNA_pt2)
 * Amplify Tagmented DNA using the lab thermocycler
 * [Cleanup Libraries](../NC_Illumina_DNA_pt3) - (this potocol)
 
