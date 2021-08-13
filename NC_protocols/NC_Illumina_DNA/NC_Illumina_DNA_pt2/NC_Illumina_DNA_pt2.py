@@ -4,7 +4,6 @@ def get_values(*names):
     return [_all_values[n] for n in names]
 
 
-
 from opentrons.types import Point
 
 metadata = {
