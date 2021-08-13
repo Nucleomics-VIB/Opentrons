@@ -258,16 +258,16 @@ def run(ctx):
         remove_supernatantp20(20, i, sample, pip=m20)
         m20.drop_tip()
 
-    # delay, add rsb
+    # evaporate residual Ethanol then add RSB
     ctx.delay(minutes=5)
     
-    ctx.pause('''
-            plate B is on the mag-module on position #1.
-            a new empty plate C is available on position #3.
-            empty the trash if needed.
-            select "Resume" in the Opentrons App.
-            '''
-            )
+    #ctx.pause('''
+    #        plate B is on the mag-module on position #1.
+    #        a new empty plate C is available on position #3.
+    #        empty the trash if needed.
+    #        select "Resume" in the Opentrons App.
+    #        '''
+    #        )
   
     # add RSB (temporary 33µl; maybe 32µl would be feasible too)
     ctx.comment('#'*80,'\n# add RSB to plate B in position #1 \n', '#'*80, '\n')
