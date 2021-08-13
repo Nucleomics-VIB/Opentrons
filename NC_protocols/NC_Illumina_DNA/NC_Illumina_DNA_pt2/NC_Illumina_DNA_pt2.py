@@ -239,7 +239,7 @@ def run(ctx):
 
     # mix epm
     mag_module.disengage()
-     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
+    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m20, 20)
         m20.pick_up_tip(park_tips_20.rows()[0][i+tip_park_start_col])
         m20.mix(10, 18, col)
