@@ -195,14 +195,16 @@ def run(ctx):
     ctx.pause(''' Seal the plate''')
     mag_module.disengage()
 
-    ctx.pause('''
-            remove plate A from magnetic module in position #1
-            replace with filled plate B from position #2
-            add x ml 70% ethanol to reservoir (columns 4, 5, and 6)
-            add y ml RSB to reservoir (column 3)
-            empty the trash if needed.
-            select "Resume" in the Opentrons App.
-            ''')
+    ctx.pause(
+        '''
+        remove plate A from magnetic module in position #1
+        replace with filled plate B from position #2
+        add x ml 70% ethanol to reservoir (columns 4, 5, and 6)
+        add y ml RSB to reservoir (column 3)
+        empty the trash if needed.
+        select "Resume" in the Opentrons App.
+        '''
+        )
 
     # engage magnet, remove supernatant
     ctx.comment('#'*80,'\n# capture, remove supernatant \n', '#'*80, '\n')
@@ -263,12 +265,12 @@ def run(ctx):
     ctx.delay(minutes=5)
     
     #ctx.pause('''
-    #        plate B is on the mag-module on position #1.
-    #        a new empty plate C is available on position #3.
-    #        empty the trash if needed.
-    #        select "Resume" in the Opentrons App.
-    #        '''
-    #        )
+    #   plate B is on the mag-module on position #1.
+    #   a new empty plate C is available on position #3.
+    #   empty the trash if needed.
+    #   select "Resume" in the Opentrons App.
+    #   '''
+    #   )
   
     # add RSB (temporary 33µl; maybe 32µl would be feasible too)
     ctx.comment('#'*80,'\n# add RSB to plate B in position #1 \n', '#'*80, '\n')

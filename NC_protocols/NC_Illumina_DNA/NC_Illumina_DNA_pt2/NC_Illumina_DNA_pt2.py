@@ -119,11 +119,11 @@ def run(ctx):
 
     ctx.pause(
         '''
-            seal plate B with Microseal
-            transfer the plate to the thermocycler and run the PTC program. 
-            return the PCR plate to the magnetic module.
-            empty the trash if needed.
-            select "Resume" in the Opentrons App.
+        seal plate B with Microseal
+        transfer the plate to the thermocycler and run the PTC program. 
+        return the PCR plate to the magnetic module.
+        empty the trash if needed.
+        select "Resume" in the Opentrons App.
         '''
         )
 
