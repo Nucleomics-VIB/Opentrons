@@ -48,6 +48,7 @@ reagent plate layout: **(the plate from Part-1 remains on deck for this protocol
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
 
+---
 ## Process
 1. Attach the p20 multichanel to the left mount and the p300 multichanel to the right mount and calibrate them if not yet done.
 2. Download your protocol.

@@ -43,6 +43,7 @@ reservoir layout: **(New empty reservoir)**
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
 
+---
 ## Process
 1. Input the mount side for your P50 single-channel pipette, whether you are using a P50 multi-channel pipette, the mount for your P50 multi-channel pipette (if applicable), and the number of samples to process.
 2. Download your protocol.
