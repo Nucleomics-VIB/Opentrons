@@ -3,7 +3,7 @@
 # Apple
 .DS_Store
 
-# local folders
+# ignore local working folders
 FromLibrary/*
 atWork/*
 github_templates/*
