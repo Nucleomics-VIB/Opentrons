@@ -32,7 +32,7 @@ Links:
 
 Prepare solutions and fill the reservoir slots when prompted
 
-reservoir layout: **(New empty reservoir)**
+### reservoir layout: **(New empty reservoir)**
 * col3: RSB
 * col4: 70% Ethanol
 * col5: 70% Ethanol
@@ -45,6 +45,7 @@ reservoir layout: **(New empty reservoir)**
 
 ---
 ## Process
+
 1. Input the mount side for your P50 single-channel pipette, whether you are using a P50 multi-channel pipette, the mount for your P50 multi-channel pipette (if applicable), and the number of samples to process.
 2. Download your protocol.
 3. Upload your protocol into the [OT App](https://opentrons.com/ot-app).

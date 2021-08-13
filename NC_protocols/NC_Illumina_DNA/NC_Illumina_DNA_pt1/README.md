@@ -17,7 +17,7 @@ Links:
 * [Cleanup Libraries](../NC_Illumina_DNA_pt3)
 
 ---
-![Materials Needed](https://s3.amazonaws.com/opentrons-protocol-library-website/custom-README-images/001-General+Headings/materials.png)
+## Materials
 
 * [Bio-Rad Hard Shell 96-well low profile PCR plate 200ul #hsp9601 (well diameter:5.46mm, well depth:14.81mm)](bio-rad.com/en-us/sku/hsp9601-hard-shell-96-well-pcr-plates-low-profile-thin-wall-skirted-white-clear?ID=hsp9601)
 * [Opentrons: NEST 12 Well Reservoir 15 mL (360102)](https://www.cell-nest.com/page94?_l=en&product_id=102)
@@ -27,15 +27,15 @@ Links:
 * [300ul Opentrons tipracks](https://shop.opentrons.com/collections/opentrons-tips/products/opentrons-300ul-tips)
 
 ---
-![Setup](https://s3.amazonaws.com/opentrons-protocol-library-website/custom-README-images/001-General+Headings/Setup.png)
+## Setup
 
 Vortex BLT and TB1 vigorously for 10 seconds before dispensing in the mastermix plate. Preprogram the thermocycler according to the TAG program parameters described in the kit manual.
 
-reservoir layout:
+### reservoir layout:
 * col1: water
 * col5: waste (empty)
 
-reagent plate layout:
+### reagent plate layout:
 * col1: mastermix from the kit BLT and TB1 stocks (vortexed before adding to plate)
 
 ### Robot
