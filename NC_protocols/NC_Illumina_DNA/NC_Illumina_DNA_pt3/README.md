@@ -17,7 +17,7 @@ Links:
 * [Cleanup Libraries](./NC_Illumina_DNA_pt3) - (this potocol)
 
 ---
-![Materials Needed](https://s3.amazonaws.com/opentrons-protocol-library-website/custom-README-images/001-General+Headings/materials.png)
+## Materials
 
 * 3x [Bio-Rad Hard Shell 96-well low profile PCR plate 200ul #hsp9601 (well diameter:5.46mm, well depth:14.81mm)](bio-rad.com/en-us/sku/hsp9601-hard-shell-96-well-pcr-plates-low-profile-thin-wall-skirted-white-clear?ID=hsp9601)
 * [Opentrons: NEST 12 Well Reservoir 15 mL (360102)](https://www.cell-nest.com/page94?_l=en&product_id=102) - **(New empty reservoir)**
@@ -28,7 +28,7 @@ Links:
 
 
 ---
-![Setup](https://s3.amazonaws.com/opentrons-protocol-library-website/custom-README-images/001-General+Headings/Setup.png)
+## Setup
 
 Prepare solutions and fill the reservoir slots when prompted
 
