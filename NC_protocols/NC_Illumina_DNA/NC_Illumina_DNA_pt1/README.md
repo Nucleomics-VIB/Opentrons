@@ -1,7 +1,7 @@
 # Illumina DNA Library Prep: Part-1/3 - Tagment DNA
 
-### Author
-[Opentrons](https://opentrons.com/)
+### Authors
+[Opentrons](https://opentrons.com/) and [VIB Nucleomics Core](https://www.nucleomics.be)
 
 ## Categories
 * NGS Library Prep

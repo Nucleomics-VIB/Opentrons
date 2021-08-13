@@ -1,7 +1,7 @@
 # Illumina DNA Library Prep: Part-3/3 - Clean up Libraries
 
-### Author
-[Opentrons](https://opentrons.com/)
+### Authors
+[Opentrons](https://opentrons.com/) and [VIB Nucleomics Core](https://www.nucleomics.be)
 
 ## Categories
 * NGS Library Prep
