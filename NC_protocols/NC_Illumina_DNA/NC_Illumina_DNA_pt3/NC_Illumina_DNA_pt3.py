@@ -9,9 +9,9 @@ from opentrons import protocol_api
 
 
 metadata = {
-    'protocolName': 'NC_Illumina_DNA_pt3_16',
+    'protocolName': 'NC_Illumina_DNA_pt3',
     'author': 'Rami Farawi <rami.farawi@opentrons.com>, Stefaan Derveaux <stefaan.derveaux@vib.be>',
-    'description': 'Illumina DNA part3 for 16 samples - Clean up Libraries',
+    'description': 'Illumina DNA part3 (16 samples) - Clean up Libraries',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'
 }
