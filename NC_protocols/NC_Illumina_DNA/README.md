@@ -8,4 +8,6 @@
 	* Illumina DNA Library Prep
 
 ## Description
-This 3-parts protocol performs the **[Illumina DNA Library Prep protocol](https://www.illumina.com/products/by-type/sequencing-kits/library-prep-kits/nextera-dna-flex.html)** library preparation starting from multiple samples provided on a PCR plate (skirted) (up to 96).
+This 3-parts protocol performs the **[Illumina DNA Library Prep protocol](https://www.illumina.com/products/by-type/sequencing-kits/library-prep-kits/nextera-dna-flex.html)** library preparation starting from multiple samples (up to 96) provided on a PCR plate (skirted).
+
+*last edit: 2021-08-16*
