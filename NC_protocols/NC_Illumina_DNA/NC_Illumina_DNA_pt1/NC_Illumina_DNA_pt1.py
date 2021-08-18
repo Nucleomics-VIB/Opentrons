@@ -40,10 +40,10 @@ def run(ctx):
     reagent_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', label='Mastermix Plate')
     samples = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '2',  label='Sample Plate')
     final_plate = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '3', label='Final Plate')
-    reservoir = ctx.load_labware('nest_12_reservoir_15ml', '4')
-    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', slot)
+    reservoir = ctx.load_labware('nest_12_reservoir_15ml', '4', label='Reservoir')
+    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', slot, label='tip_20')
                for slot in ['5', '6', '7']]
-    tiprack300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', '8')
+    tiprack300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', '8', label='tip_200')
 
     # load instrument
     # p20_multi_gen2: left, tiprack20 (3)
@@ -62,7 +62,7 @@ def run(ctx):
     waste = reservoir.wells()[5]
 
     # add water to empty biorad plate
-    ctx.comment('#'*80,'\n# add water to empty plate \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' add water to final plate ' + '#'*3)
     m20.pick_up_tip()
     for col in final_plate.rows()[0][:num_col]:
         m20.aspirate(10, water)
@@ -71,7 +71,7 @@ def run(ctx):
     ctx.comment('\n    done     \n')
 
     # add dna to plate
-    ctx.comment('#'*80,'\n# add DNA to empty final plate \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' add DNA to final plate ' + '#'*3)
     for i, (dna, dest) in enumerate(zip(samples.rows()[0],
                                     final_plate.rows()[0][:num_col])):
         m20.pick_up_tip()
@@ -83,7 +83,7 @@ def run(ctx):
     ctx.comment('\n    done     \n')
 
     # add mastermix to plate
-    ctx.comment('#'*80,'\n# add mastermix to final plate \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' add mastermix to final plate ' + '#'*3)
     m20.flow_rate.aspirate = 4
     m20.flow_rate.dispense = 4
 
@@ -106,4 +106,10 @@ def run(ctx):
         m20.mix(1, 18, col)
         m20.drop_tip()
     
-    ctx.comment('\n All done, final plate in position #3 is ready for protocol part-2 \n')
+    ctx.comment(
+    '''
+    Seal the plate with microseal-B. 
+    Place it on the pre-programmed thermocycler and run the TAG program. 
+    At completion, proceed immediately to part 2. 
+    '''
+    )

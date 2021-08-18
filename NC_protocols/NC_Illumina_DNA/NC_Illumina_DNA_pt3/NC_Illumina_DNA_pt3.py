@@ -1,6 +1,6 @@
 def get_values(*names):
     import json
-    _all_values = json.loads("""{"num_samp":16,"plate_A_start_col":1,"plate_B_start_col":7,"plate_C_start_col":1,"tip_park_start_col":1,"asp_height":1,"length_from_side":2.0,"m20_mount":"left","m300_mount":"right"}""")
+    _all_values = json.loads("""{"num_samp":16,"plate_A_start_col":1,"plate_C_start_col":1,"tip_park_start_col":1,"asp_height":1,"length_from_side":2.0,"m20_mount":"left","m300_mount":"right"}""")
     return [_all_values[n] for n in names]
 
 
@@ -20,45 +20,57 @@ metadata = {
 
 def run(ctx):
 
-    [num_samp, plate_A_start_col, plate_B_start_col,
-     plate_C_start_col, tip_park_start_col, asp_height,
-     length_from_side, m20_mount, m300_mount] = get_values(  # noqa: F821
-      "num_samp", "plate_A_start_col", "plate_B_start_col",
-      "plate_C_start_col", "tip_park_start_col", "asp_height",
-      "length_from_side", "m20_mount", "m300_mount")
+    [num_samp, 
+    plate_A_start_col, 
+    plate_C_start_col,
+    tip_park_start_col, 
+    asp_height,
+    length_from_side, 
+    m20_mount, 
+    m300_mount] = get_values(  # noqa: F821
+      "num_samp", 
+      "plate_A_start_col", 
+      "plate_C_start_col", 
+      "tip_park_start_col", 
+      "asp_height",
+      "length_from_side", 
+      "m20_mount", 
+      "m300_mount")
 
     # test user inputs
     if not 1 <= plate_A_start_col <= 12:
         raise Exception("Enter a plate_A_start_col 1-12")
-    if not 1 <= plate_B_start_col <= 12:
-        raise Exception("Enter a plate_B_start_col 1-12")
+    #if not 1 <= plate_B_start_col <= 12:
+    #    raise Exception("Enter a plate_B_start_col 1-12")
     if not 1 <= plate_C_start_col <= 12:
         raise Exception("Enter a plate_C_start_col 1-12")
     if not 1 <= tip_park_start_col <= 12:
         raise Exception("Enter a tip_park_start_col 1-12")
-
+        
     num_samp = int(num_samp)
+    if num_samp > 48:
+        raise Exception("this protocol was made for up to 48 samples")
     num_col = int(num_samp/8)
+    # shift index to 0-based
     plate_A_start_col = int(plate_A_start_col) - 1
-    plate_B_start_col = int(plate_B_start_col) - 1
     plate_C_start_col = int(plate_C_start_col) - 1
     tip_park_start_col = int(tip_park_start_col) - 1
 
     # load labware
     mag_module = ctx.load_module('magnetic module gen2', '1')
-    mag_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr')
-    plate_B = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '2')
-    plate_C = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '3')
-    reservoir = ctx.load_labware('nest_12_reservoir_15ml', '4')
-    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', slot)
+    mag_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', label='Plate from part#2')
+    plate_B = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '2', label='Plate B')
+    plate_C = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '3', label='Plate C')
+    reservoir = ctx.load_labware('nest_12_reservoir_15ml', '4', label='Reservoir')
+    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', slot, label='tip_20')
                  for slot in ['6']]
-    tiprack = [ctx.load_labware('opentrons_96_filtertiprack_200ul', slot)
+    tiprack200 = [ctx.load_labware('opentrons_96_filtertiprack_200ul', slot, label='tip_200')
                for slot in ['5', '7', '8', '9']]
-    park_rack = ctx.load_labware('opentrons_96_filtertiprack_200ul', '10')
+    park_rack = ctx.load_labware('opentrons_96_filtertiprack_200ul', '10', label='Park tip_200')
 
     # load instrument
     m300 = ctx.load_instrument('p300_multi_gen2', m300_mount,
-                               tip_racks=tiprack)
+                               tip_racks=tiprack200)
     m20 = ctx.load_instrument('p20_multi_gen2', m20_mount, tip_racks=tiprack20)
 
     # turn lights ON (comment out to turn OFF)
@@ -67,6 +79,9 @@ def run(ctx):
     # globally change instrument values
     magnet_height = 11
 
+    # globally change magnetic capture duration (1 for testing)
+    capture_duration = 1
+    
     def change_speeds(pip, speed):
         pip.flow_rate.aspirate = speed
         pip.flow_rate.dispense = speed
@@ -79,6 +94,7 @@ def run(ctx):
             m300.reset_tipracks()
             m300.pick_up_tip()
 
+    # standard removal from aspiration height -0.5mm
     def remove_supernatant(vol, index, loc, trash=False, pip=m300):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height-0.5).move(
@@ -87,7 +103,8 @@ def run(ctx):
         if trash:
             pip.dispense(vol, waste2.top(z=-5))
             pip.blow_out()
-    
+
+    # removal from aspiration height + 4mm
     def remove_supernatantTOP(vol, index, loc, trash=False, pip=m300):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height+4).move(
@@ -97,6 +114,7 @@ def run(ctx):
             pip.dispense(vol, waste.top(z=-5))
             pip.blow_out()
     
+    # removal from the aspiration height -0.5mm
     def remove_supernatantBOT(vol, index, loc, trash=False, pip=m300):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height-0.5).move(
@@ -106,7 +124,8 @@ def run(ctx):
             vol2=vol+60
             pip.dispense(vol2, waste.top(z=-5), rate=5)
             pip.blow_out()
-    
+
+    # remove residual ethanol with p20 tips
     def remove_supernatantp20(vol, index, loc, trash=False, pip=m20):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height-0.5).move(
@@ -134,12 +153,12 @@ def run(ctx):
     waste2 = reservoir.wells()[10]
 
     # engage, incubate, remove supernatant and add it to right side of the plate A (A1 to A7, A2 to A8 ...)
-    ctx.comment('#'*80,'\n# capture, incubate, remove supernatant from the half-plate A in position #1 \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' capture, incubate, transfer supernatant the left half to the right half of the BLT-PCR plate ' + '#'*3)
     mag_module.engage(height=magnet_height)
-    ctx.delay(minutes=5)
+    ctx.delay(minutes=capture_duration)
     for i, (s_col, d_col) in enumerate(zip(
                         mag_plate.rows()[0][plate_A_start_col: plate_A_start_col+ num_col],
-                        mag_plate.rows()[0][plate_B_start_col: plate_B_start_col+ num_col]
+                        mag_plate.rows()[0][plate_A_start_col + 6: plate_A_start_col + 6 + num_col]
                         )):
         change_speeds(m300, 15)
         pick_up300()
@@ -148,21 +167,21 @@ def run(ctx):
         m300.drop_tip()
 
     ctx.pause('''
-            seal the left half-plate A in position #1?
-            ensure Plate B is on the deck in position #2 and filled with magnetic beads. 
-            empty the trash if needed.
-            select "Resume" in the Opentrons App.
+            Seal the left half-plate on the magnetic module (position #1)? 
+            Ensure Plate B is on the deck in position #2 and filled with magnetic beads. 
+            Empty the trash if needed. 
+            Select "Resume" in the Opentrons App. 
             ''')
 
     # pre-mix diluted beads, add to 'right side' of the sample plate (A7, A8 ...)
-    ctx.comment('#'*80,'\n# pre-mix diluted beads, add to the right side of the sample plate in position #1 \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' pre-mix diluted beads in the reservoir, add beads to the right side of the plate on the magnetic module (position #1) ' + '#'*3)
     mag_module.disengage()  
     change_speeds(m300, 70)
     pick_up300()
     m300.mix(10, 50*num_col, diluted_magbeads)
     m300.drop_tip()
 
-    for col in mag_plate.rows()[0][plate_B_start_col: plate_B_start_col+ num_col]:
+    for col in mag_plate.rows()[0][plate_A_start_col + 6: plate_A_start_col + 6 + num_col]:
         pick_up300()
         m300.aspirate(42.5, diluted_magbeads)
         m300.dispense(42.5, col)
@@ -173,16 +192,14 @@ def run(ctx):
     ctx.delay(minutes=1)
 
     # capture, transfer supernatant to plate B (left side)
-    ctx.comment('#'*80,'\n# capture, transfer supernatant to plate B (left side) \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' capture, transfer supernatant to plate B (on position #2) ' + '#'*3)
     mag_module.engage(height=magnet_height)
-    ctx.delay(minutes=5)
+    ctx.delay(minutes=capture_duration)
     for i, (s_col, d_col) in enumerate(zip(
-                                mag_plate.rows()[0][plate_B_start_col:
-                                                    plate_B_start_col
-                                                    + num_col],
+                                mag_plate.rows()[0][plate_A_start_col +6:
+                                                    plate_A_start_col +6 + num_col],
                                        plate_B.rows()[0][plate_A_start_col:
-                                                         plate_A_start_col
-                                                         + num_col]
+                                                         plate_A_start_col + num_col]
                                        )):
         change_speeds(m300, 15)
         pick_up300()
@@ -192,43 +209,45 @@ def run(ctx):
         m300.mix(10, 55, d_col)
         m300.drop_tip()
     ctx.delay(minutes=1)
-    ctx.pause(''' Seal the plate''')
+    ctx.pause(
+        ''' 
+        Seal the right half of the plate on the magnetic module (position #1). 
+        ''')
     mag_module.disengage()
 
     ctx.pause(
         '''
-        remove plate A from magnetic module in position #1
-        replace with filled plate B from position #2
-        add x ml 70% ethanol to reservoir (columns 4, 5, and 6)
-        add y ml RSB to reservoir (column 3)
-        empty the trash if needed.
-        select "Resume" in the Opentrons App.
+        Remove the plate from the magnetic module in position #1. 
+        Replace with the plate from position #2. 
+        Add at least 5ml 70% ethanol to reservoir (columns 4, 5, and 6). 
+        A at least 2ml RSB to reservoir (column 3). 
+        Empty the trash if needed. 
+        Select "Resume" in the Opentrons App. 
         '''
         )
 
     # engage magnet, remove supernatant
-    ctx.comment('#'*80,'\n# capture, remove supernatant \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' capture, remove supernatant ' + '#'*3)
     mag_module.engage(height=magnet_height)
-    ctx.delay(minutes=5)
+    ctx.delay(minutes=capture_duration)
     for i, s_col in enumerate(
                                 mag_plate.rows()[0][plate_A_start_col:
-                                                    plate_A_start_col
-                                                    + num_col]):
+                                                    plate_A_start_col + num_col
+                                                    ]):
         change_speeds(m300, 15)
         pick_up300()
         remove_supernatant(65, i, s_col, trash=True)
         m300.drop_tip()
 
     # two ethanol washes
-    ctx.comment('#'*80,'\n# wash twice with Ethanol \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' wash twice with Ethanol ' + '#'*3)
     for wash in range(2):
         change_speeds(m300, 35)
         pick_up300()
         for eth, sample in zip(ethanol*num_col,
                                mag_plate.rows()[0][
                                                     plate_A_start_col:
-                                                    plate_A_start_col
-                                                    + num_col
+                                                    plate_A_start_col + num_col
                                                     ]):
             m300.aspirate(185, eth)
             ctx.delay(seconds=1.5)
@@ -238,8 +257,7 @@ def run(ctx):
         ctx.delay(seconds=10)
         for i, sample in enumerate(mag_plate.rows()[0][
                                                          plate_A_start_col:
-                                                         plate_A_start_col
-                                                         + num_col
+                                                         plate_A_start_col + num_col
                                                          ]):
             m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col])
             change_speeds(m300, 15)
@@ -251,11 +269,10 @@ def run(ctx):
                 m300.drop_tip()
 
     # remove excess with p20
-    ctx.comment('#'*80,'\n# remove leftover Ethanol with p20 \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' remove leftover Ethanol with p20 ' + '#'*3)
     for i, sample in enumerate(mag_plate.rows()[0][
                                                      plate_A_start_col:
-                                                     plate_A_start_col
-                                                     + num_col
+                                                     plate_A_start_col + num_col
                                                      ]):
         m20.pick_up_tip()
         remove_supernatantp20(20, i, sample, pip=m20)
@@ -263,17 +280,9 @@ def run(ctx):
 
     # evaporate residual Ethanol then add RSB
     ctx.delay(minutes=5)
-    
-    #ctx.pause('''
-    #   plate B is on the mag-module on position #1.
-    #   a new empty plate C is available on position #3.
-    #   empty the trash if needed.
-    #   select "Resume" in the Opentrons App.
-    #   '''
-    #   )
-  
+
     # add RSB (temporary 33µl; maybe 32µl would be feasible too)
-    ctx.comment('#'*80,'\n# add RSB to plate B in position #1 \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' add RSB to plate B in position #1 ' + '#'*3)
     for i, sample in enumerate(mag_plate.rows()[0][
                                                      plate_A_start_col:
                                                      plate_A_start_col
@@ -284,14 +293,19 @@ def run(ctx):
         m300.aspirate(33, rsb_buffer)
         m300.dispense(33, sample)
         m300.return_tip()
-    
+
+    ctx.pause('''
+        Empty the trash if needed. 
+        Select "Resume" in the Opentrons App. 
+        '''
+        )
+
     # resuspend beads
-    ctx.comment('#'*80,'\n# resuspend beads \n', '#'*80, '\n')
+    ctx.comment('#'*3 + ' resuspend beads ' + '#'*3)
     mag_module.disengage()
     for i, sample in enumerate(mag_plate.rows()[0][
                                                      plate_A_start_col:
-                                                     plate_A_start_col
-                                                     + num_col
+                                                     plate_A_start_col + num_col
                                                      ]):
         change_speeds(m300, 70)
         m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col+6])
@@ -302,17 +316,15 @@ def run(ctx):
     ctx.delay(minutes=1)
 
     # capture, transfer elutate to plate C
-    ctx.comment('#'*80,'\n# capture, transfer supernatant (eluate) to plate C in position #3 \n', '#'*80, '\n')
+    ctx.comment('#'*3 + 'capture, transfer supernatant (library) to plate C in position #3 ' + '#'*3)
     mag_module.engage(height=magnet_height)
-    ctx.delay(minutes=5)
+    ctx.delay(minutes=capture_duration)
 
     for i, (s_col, d_col) in enumerate(zip(
                                 mag_plate.rows()[0][plate_A_start_col:
-                                                    plate_A_start_col
-                                                    + num_col],
+                                                    plate_A_start_col + num_col],
                                        plate_C.rows()[0][plate_C_start_col:
-                                                         plate_C_start_col
-                                                         + num_col]
+                                                         plate_C_start_col + num_col]
                                        )):
         change_speeds(m20, 5)
         m20.pick_up_tip()
