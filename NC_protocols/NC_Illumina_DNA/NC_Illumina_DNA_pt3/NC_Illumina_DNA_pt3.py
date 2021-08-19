@@ -135,9 +135,9 @@ def run(ctx):
             Point(x=(loc.diameter/2-length_from_side)*side))
         pip.aspirate(vol, aspirate_loc)
         if trash:
-            vol2=vol+extra_vol
-            pip.dispense(vol2, waste2.top(z=-5), rate=disp_rate)
-            pip.blow_out()
+            #vol2=vol+extra_vol
+            #pip.dispense(vol2, waste_by_index[index].top(z=-5), rate=disp_rate)
+            pip.blow_out(waste_by_index[index].top(z=-5), rate=disp_rate)
 
     # standard removal from aspiration height -0.5mm
     def remove_supernatant(vol, index, loc, trash=False, pip=m300):
@@ -196,6 +196,7 @@ def run(ctx):
     diluted_magbeads = reservoir.wells()[7]
     waste = reservoir.wells()[11]
     waste2 = reservoir.wells()[10]
+    # waste_by_index = reservoir.wells()[6:11]
 
     # engage, incubate, and transfer the supernatant to the right half of the same plate (col1 => col7, col2 => col8, etc)
     ctx.comment('#'*3 
