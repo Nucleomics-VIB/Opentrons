@@ -242,7 +242,7 @@ def run(ctx):
     m300.mix(10, 50*num_col, diluted_magbeads)
     m300.drop_tip()
 
-    for col in mag_plate.rows()[0][plate_A_start_col+6: plate_A_start_col+6+num_col]:
+    for col in mag_plate.rows()[0][plate_A_start_col+6:plate_A_start_col+6+num_col]:
         pick_up300()
         m300.aspirate(42.5, diluted_magbeads)
         m300.dispense(42.5, col)
@@ -297,9 +297,7 @@ def run(ctx):
     mag_module.engage(height=magnet_height)
     ctx.delay(minutes=capture_duration)
     for i, s_col in enumerate(
-            mag_plate.rows()[0][plate_A_start_col:
-                plate_A_start_col + num_col]
-            ):
+            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
         change_speeds(m300, 15)
         pick_up300()
         remove_supernatant(65, i, s_col, trash=True)
@@ -311,10 +309,8 @@ def run(ctx):
         change_speeds(m300, 35)
         pick_up300()
         for eth, sample in zip(
-            ethanol*num_col,
-            mag_plate.rows()[0][plate_A_start_col:
-                plate_A_start_col + num_col]
-            ):
+                ethanol*num_col,
+                mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
             m300.aspirate(185, eth)
             ctx.delay(seconds=1.5)
             m300.dispense(185, sample.top())
@@ -322,9 +318,7 @@ def run(ctx):
         m300.drop_tip()
         ctx.delay(seconds=10)
         for i, sample in enumerate(
-            mag_plate.rows()[0][plate_A_start_col:
-                plate_A_start_col+num_col]
-            ):
+                mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
             m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col])
             change_speeds(m300, 15)
             # take 60 from top and keep in tip
@@ -339,9 +333,7 @@ def run(ctx):
     # remove excess with p20
     ctx.comment('#'*3 + ' remove leftover Ethanol with p20 ' + '#'*3)
     for i, sample in enumerate(
-        mag_plate.rows()[0][plate_A_start_col:
-            plate_A_start_col + num_col]
-        ):
+            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col + num_col]):
         m20.pick_up_tip()
         remove_supernatantp20(20, i, sample, pip=m20)
         m20.drop_tip()
@@ -352,9 +344,7 @@ def run(ctx):
     # add RSB (temporary 33µl; maybe 32µl would be feasible too)
     ctx.comment('#'*3 + ' add RSB to plate B in position #1 ' + '#'*3)
     for i, sample in enumerate(
-        mag_plate.rows()[0][plate_A_start_col:
-            plate_A_start_col+num_col]
-        ):
+            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
         change_speeds(m300, 15)
         m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col+6])
         m300.aspirate(33, rsb_buffer)
@@ -371,9 +361,7 @@ def run(ctx):
     ctx.comment('#'*3 + ' resuspend beads ' + '#'*3)
     mag_module.disengage()
     for i, sample in enumerate(
-        mag_plate.rows()[0][plate_A_start_col:
-            plate_A_start_col + num_col]
-        ):
+            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
         change_speeds(m300, 70)
         m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col+6])
         mix_at_beads(25, i, sample)
@@ -390,12 +378,10 @@ def run(ctx):
     ctx.delay(minutes=capture_duration)
 
     for i, (s_col, d_col) in enumerate(
-            zip(
-                mag_plate.rows()[0][plate_A_start_col:
+            zip(mag_plate.rows()[0][plate_A_start_col:
                     plate_A_start_col + num_col],
                 plate_C.rows()[0][plate_C_start_col:
-                    plate_C_start_col + num_col]
-                )
+                    plate_C_start_col + num_col] )
             ):
         change_speeds(m20, 5)
         m20.pick_up_tip()
