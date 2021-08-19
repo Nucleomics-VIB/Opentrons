@@ -1,4 +1,4 @@
-<img src="https://opentrons.com/static/ot-logo-full-544e4c50c213cdbd691eef6da4eefdf1.png">
+<img src="https://opentrons.com/static/ot-logo-full-544e4c50c213cdbd691eef6da4eefdf1.png" width=300px>
 
 # Opentrons
 protocols and utilities for the Opentrons robots
