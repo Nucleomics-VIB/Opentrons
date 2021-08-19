@@ -1,25 +1,39 @@
 def get_values(*names):
     import json
-    _all_values = json.loads("""{"num_samp":16,"p300_tip_start_col":1,"m20_mount":"left","m300_mount":"right"}""")
+    _all_values = json.loads(
+        """
+        {
+            "num_samp":16,
+            "p300_tip_start_col":1,
+            "m20_mount":"left",
+            "m300_mount":"right"
+        }
+        """)
     return [_all_values[n] for n in names]
 
 
 metadata = {
     'protocolName': 'NC_Illumina_DNA_pt1',
-    'author': 'Rami Farawi <rami.farawi@opentrons.com>, Stefaan Derveaux <stefaan.derveaux@vib.be>',
+    'author': 'Rami Farawi <rami.farawi@opentrons.com>, \
+        Stefaan Derveaux <stefaan.derveaux@vib.be>',
     'description': 'Illumina DNA part1 (16 samples) - Tagment DNA',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'
-}
+    }
 
-# script version 1.0; 2021_08_11 (SD)
+# script version 1.2; 2021_08_19 (SD)
 
 def run(ctx):
 
     # get user inputs
-    [num_samp, p300_tip_start_col,
-        m20_mount, m300_mount] = get_values(  # noqa: F821
-      "num_samp", "p300_tip_start_col", "m20_mount", "m300_mount")
+    [num_samp, 
+    p300_tip_start_col,
+    m20_mount, 
+    m300_mount] = get_values(  # noqa: F821
+      "num_samp", 
+      "p300_tip_start_col", 
+      "m20_mount", 
+      "m300_mount")
 
     # check p300_tip_start_col in valid range
     if not 1 <= p300_tip_start_col <= 12:
@@ -27,31 +41,39 @@ def run(ctx):
 
     num_samp = int(num_samp)
     num_col = int(num_samp/8)
-    p300_tip_start_col = p300_tip_start_col
+    p300_tip_start_col = p300_tip_start_col-1
 
     # load labware
-    # magnetic module gen2: 1, biorad_96_wellplate_200ul_pcr
-    # biorad_96_wellplate_200ul_pcr: 2
-    # biorad_96_wellplate_200ul_pcr: 3
-    # nest_12_reservoir_15ml: 4
-    # opentrons_96_filtertiprack_20ul 5, 6, 7
-    # opentrons_96_filtertiprack_200ul: 8
-    mag_module = ctx.load_module('magnetic module gen2', '1')
-    reagent_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', label='Mastermix Plate')
-    samples = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '2',  label='Sample Plate')
-    final_plate = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '3', label='Final Plate')
-    reservoir = ctx.load_labware('nest_12_reservoir_15ml', '4', label='Reservoir')
-    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', slot, label='tip_20')
+    mag_module = ctx.load_module('magnetic module gen2', 
+        '1')
+    reagent_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', 
+        label='Mastermix Plate')
+    samples = ctx.load_labware('biorad_96_wellplate_200ul_pcr', 
+        '2', 
+        label='Sample Plate')
+    final_plate = ctx.load_labware('biorad_96_wellplate_200ul_pcr', 
+        '3', 
+        label='Final Plate')
+    reservoir = ctx.load_labware('nest_12_reservoir_15ml', 
+        '4', 
+        label='Reservoir')
+    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', 
+        slot, 
+        label='tip_20')
                for slot in ['5', '6', '7']]
-    tiprack300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', '8', label='tip_200')
+    tiprack300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', 
+        '8', 
+        label='tip_200')
 
     # load instrument
     # p20_multi_gen2: left, tiprack20 (3)
     # p300_multi_gen2: right, tiprack300 (1)
-    m20 = ctx.load_instrument('p20_multi_gen2', m20_mount, 
-                                tip_racks=tiprack20)
-    m300 = ctx.load_instrument('p300_multi_gen2', m300_mount,
-                               tip_racks=[tiprack300])
+    m20 = ctx.load_instrument('p20_multi_gen2', 
+        m20_mount,
+        tip_racks=tiprack20)
+    m300 = ctx.load_instrument('p300_multi_gen2', 
+        m300_mount,
+        tip_racks=[tiprack300])
 
     # turn lights ON (comment out to turn OFF)
     ctx.set_rail_lights(True)
@@ -68,7 +90,6 @@ def run(ctx):
         m20.aspirate(10, water)
         m20.dispense(10, col)
     m20.drop_tip()
-    ctx.comment('\n    done     \n')
 
     # add dna to plate
     ctx.comment('#'*3 + ' add DNA to final plate ' + '#'*3)
@@ -80,7 +101,6 @@ def run(ctx):
         m20.dispense(5, dest)
         m20.mix(5, 10, dest, rate=2.0)
         m20.drop_tip()
-    ctx.comment('\n    done     \n')
 
     # add mastermix to plate
     ctx.comment('#'*3 + ' add mastermix to final plate ' + '#'*3)
@@ -89,7 +109,7 @@ def run(ctx):
 
     for i, col in enumerate(final_plate.rows()[0][:num_col]):
         if i % 3 == 0:
-            m300.pick_up_tip(tiprack300.rows()[0][p300_tip_start_col-1])
+            m300.pick_up_tip(tiprack300.rows()[0][p300_tip_start_col])
             totalvolmastermix = 10*num_col+5-i*10
             mixvolume = 0.8*totalvolmastermix
             m300.mix(9, mixvolume, mastermix, rate=0.25)

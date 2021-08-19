@@ -1,6 +1,18 @@
 def get_values(*names):
     import json
-    _all_values = json.loads("""{"num_samp":16,"asp_height":1,"length_from_side":3,"index_start_col":1,"tip_park_start_col":1,"m20_mount":"left","m300_mount":"right"}""")
+    _all_values = json.loads(
+        """
+        {
+        "num_samp":48,
+        "asp_height":1,
+        "length_from_side":3,
+        "index_start_col":1,
+        "tip_park_start_col":1,
+        "m20_mount":"left",
+        "m300_mount":"right"
+        }
+        """
+    )
     return [_all_values[n] for n in names]
 
 
@@ -8,19 +20,24 @@ from opentrons.types import Point
 
 metadata = {
     'protocolName': 'NC_Illumina_DNA_pt2',
-    'author': 'Rami Farawi <rami.farawi@opentrons.com>, Stefaan Derveaux <stefaan.derveaux@vib.be>',
+    'author': 'Rami Farawi <rami.farawi@opentrons.com>, \
+        Stefaan Derveaux <stefaan.derveaux@vib.be>',
     'description': 'Illumina DNA part2 (16 samples) - Post Tagmentation Cleanup',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'
-}
+    }
 
-# script version 1.0; 2021_08_11 (SD)
+# script version 1.2; 2021_08_19 (SD)
 
 def run(ctx):
 
-    [num_samp, index_start_col, tip_park_start_col,
-        asp_height, length_from_side,
-        m20_mount, m300_mount] = get_values(  # noqa: F821
+    [num_samp, 
+    index_start_col, 
+    tip_park_start_col,
+    asp_height, 
+    length_from_side,
+    m20_mount, 
+    m300_mount] = get_values(  # noqa: F821
             "num_samp", 
             "index_start_col",
             "tip_park_start_col", 
@@ -49,24 +66,46 @@ def run(ctx):
     capture_duration = 1
 
     # load labware
-    mag_module = ctx.load_module('magnetic module gen2', '1')
-    sample_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', label='Sample Plate')
-    reagent_plate = ctx.load_labware('biorad_96_wellplate_200ul_pcr', '2', label='Reagent Plate')
-    index_plate = ctx.load_labware('illumina_96_wellplate_200ul', '3', label='Index Plate')
-    reservoir = ctx.load_labware('nest_12_reservoir_15ml', '4', label='Reservoir')
-    tiprack_20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', slot, label='tip_20')
-                for slot in ['5', '6']]
-    park_tips_300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', '7',  label='Park tip_200')
-    park_tips_20 = ctx.load_labware('opentrons_96_filtertiprack_20ul', '9', label='Park tip_20')
-    tiprack300 = [ctx.load_labware('opentrons_96_filtertiprack_200ul', slot, label='tip_200')
-                for slot in ['8', '11']]
-    park2_tips_300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', '10', label='Park tip_200 2')
+    mag_module = ctx.load_module('magnetic module gen2', 
+        '1')
+    sample_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', 
+        label='Sample Plate')
+    reagent_plate = ctx.load_labware('biorad_96_wellplate_200ul_pcr', 
+        '2', 
+        label='Reagent Plate')
+    index_plate = ctx.load_labware('illumina_96_wellplate_200ul', 
+        '3', 
+        label='Index Plate')
+    reservoir = ctx.load_labware('nest_12_reservoir_15ml', 
+        '4', 
+        label='Reservoir')
+    tiprack_20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', 
+        slot, 
+        label='tip_20')
+            for slot in ['5']]
+    park_tips_300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', 
+        '7', 
+        label='Park tip_200')
+    park_tips_20 = ctx.load_labware('opentrons_96_filtertiprack_20ul', 
+        '6', 
+        label='Park tip_20')
+    tiprack300 = [ctx.load_labware('opentrons_96_filtertiprack_200ul', 
+        slot, 
+        label='tip_200')
+            for slot in ['8', '11']]
+    park2_tips_300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', 
+        '10', 
+        label='Park tip_200 2')
 
     # load instrument (remove_supernatant20 toegevoegd)
-    m20 = ctx.load_instrument('p20_multi_gen2', m20_mount, 
-                               tip_racks=tiprack_20)
-    m300 = ctx.load_instrument('p300_multi_gen2', m300_mount,
-                               tip_racks=tiprack300)
+    m20 = ctx.load_instrument(
+        'p20_multi_gen2', 
+        m20_mount, 
+        tip_racks=tiprack_20)
+    m300 = ctx.load_instrument(
+        'p300_multi_gen2', 
+        m300_mount, 
+        tip_racks=tiprack300)
 
     # turn lights ON (comment out to turn OFF)
     ctx.set_rail_lights(True)
@@ -79,15 +118,24 @@ def run(ctx):
     def remove_supernatant(vol, index, loc):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height-1).move(
-                Point(x=(loc.diameter/2-length_from_side)*side))
+            Point(x=(loc.diameter/2-length_from_side)*side))
         m300.aspirate(vol, aspirate_loc)
         m300.dispense(vol, waste)
         m300.blow_out()
 
+    def remove_supernatant_apart(vol, index, loc, waste_apart):
+        side = -1 if index % 2 == 0 else 1
+        aspirate_loc = loc.bottom(z=asp_height-1).move(
+            Point(x=(loc.diameter/2-length_from_side)*side))
+        m300.aspirate(vol, aspirate_loc)
+        m300.dispense(vol, waste_apart)
+        m300.blow_out()
+
+
     def remove_supernatantp20(vol, index, loc):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height-1).move(
-                Point(x=(loc.diameter/2-length_from_side)*side))
+            Point(x=(loc.diameter/2-length_from_side)*side))
         m20.aspirate(vol, aspirate_loc)
         m20.dispense(vol, waste)
         m20.blow_out()
@@ -95,9 +143,9 @@ def run(ctx):
     def mix_at_beads(vol, index, loc):
         side = 1 if index % 2 == 0 else -1
         aspirate_loc = loc.bottom(z=asp_height).move(
-                Point(x=(loc.diameter/2-length_from_side)*side))
+            Point(x=(loc.diameter/2-length_from_side)*side))
         dispense_loc = loc.bottom(z=asp_height+4).move(
-                Point(x=(loc.diameter/2-length_from_side)*side))
+            Point(x=(loc.diameter/2-length_from_side)*side))
         for _ in range(15):
             m300.aspirate(vol, aspirate_loc)
             m300.dispense(vol, dispense_loc)
@@ -106,12 +154,13 @@ def run(ctx):
     twb = reservoir.wells()[1]
     tsb = reagent_plate.rows()[0][1]
     epm = reagent_plate.rows()[0][2]
-    waste = reservoir.wells()[5]
-    waste_2 = reservoir.wells()[4]
-    waste_3 = reservoir.wells()[3]
+    waste = reservoir.wells()[4]
+    waste_per_column = reservoir.wells()[5:11]
 
     # transfer TSB from mastermix plate to sample plate
-    ctx.comment('#'*3 + ' transfer TSB from mastermix plate to sample plate in position ' + '#'*3 )
+    ctx.comment('#'*3 
+        + ' transfer TSB from mastermix plate to sample plate in position ' 
+        + '#'*3 )
     for col in sample_plate.rows()[0][:num_col]:
         m20.pick_up_tip()
         m20.aspirate(5, tsb)
@@ -137,72 +186,78 @@ def run(ctx):
 
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m300, 15)
-        m300.pick_up_tip()
+        # remove supernatant and drop tips
+        m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col+6])
         remove_supernatant(35, i, col)
         m300.drop_tip()
-
-        # add 50ul of twb over beads
+        # add 50ul of twb over beads and park tips
         m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col])
         m300.aspirate(50, twb)
         m300.dispense(50, col)
         m300.return_tip()
 
-    # disengage magnet, and mix at bead location
+    # disengage magnet, mix at bead location, and park tips
     mag_module.disengage()
     for i, col in enumerate(sample_plate.rows()[0][:num_col]): 
         change_speeds(m300, 35)
+        # mix beads and park tips
         m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col])
         mix_at_beads(20, i, col)
-        m300.drop_tip()
+        m300.return_tip()
 
-    # engage magnet, remove supernatant, add TWB 2
+    # engage magnet, remove supernatant (with parked tips), add TWB 2 (new tips)
     ctx.comment('#'*3 + ' capture, remove SN, add TWB wash#2 ' + '#'*3)
     mag_module.engage()
     ctx.delay(minutes=capture_duration)
 
-
-    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
+    for i, (waste_apart, col) in enumerate(
+            zip(waste_per_column*num_col, sample_plate.rows()[0][:num_col])):
         change_speeds(m300, 15)
-        m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col+6])
-        remove_supernatant(55, i, col)
-        m300.return_tip()
-        # add 50ul of twb over beads
+        # remove supernatant and drop tips
+        m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col])
+        remove_supernatant_apart(55, i, col, waste_apart)
+        m300.drop_tip()
+        # add 50ul of twb over beads and park tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col])
         m300.aspirate(50, twb)
         m300.dispense(50, col)
         m300.return_tip()
-            
+
     mag_module.disengage()
-    # mix at bead location
+    # mix at bead location and park tips
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m300, 35)
+        # mix beads and park tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col])
         mix_at_beads(20, i, col)
-        m300.drop_tip()
+        m300.return_tip()
 
-    # engage magnet, remove supernatant, add TWB 3
+    # engage magnet, remove supernatant (with parked tips), add TWB 3 (new tips)
     ctx.comment('#'*3 + ' capture, remove SN, add TWB wash#3 ' + '#'*3)
     mag_module.engage()
     ctx.delay(minutes=capture_duration)
 
-    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
+    for i, (waste_apart, col) in enumerate(
+            zip(waste_per_column*num_col, sample_plate.rows()[0][:num_col])):
         change_speeds(m300, 15)
-        m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col+6])
-        remove_supernatant(55, i, col)
+        # remove supernatant and drop tips
+        m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col])
+        remove_supernatant_apart(55, i, col, waste_apart)
         m300.drop_tip()
-        # add 50ul of twb over beads
+        # add 50ul of twb over beads and park tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col+6])
         m300.aspirate(50, twb)
         m300.dispense(50, col)
         m300.return_tip()
-            
+
     mag_module.disengage()
-    # mix at bead location
+    # mix at bead location with parked tips
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m300, 35)
+        # mix beads and park tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col+6])
         mix_at_beads(20, i, col)
-        m300.drop_tip()
+        m300.return_tip()
 
     # prepare EPM Mastermix
     ctx.pause(
@@ -214,20 +269,23 @@ def run(ctx):
         '''
         )
 
-    # engage magnet, remove supernatant, add EPM Mastermix
+    # engage magnet, remove supernatant with parked tips, add EPM Mastermix
     ctx.comment('#'*3 + ' capture, remove SN, add EPM Mastermix ' + '#'*3)
     mag_module.engage()
     ctx.delay(minutes=capture_duration)
 
     ctx.comment('\n remove supernatant TWB wash#3 (P300)\n')
-    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
+    for i, (waste_apart, col) in enumerate(
+            zip(waste_per_column*num_col, sample_plate.rows()[0][:num_col])):
         change_speeds(m300, 15)
-        m300.pick_up_tip()
-        remove_supernatant(55, i, col)
+        # remove supernatant and drop tips
+        m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col+6])
+        remove_supernatant_apart(55, i, col, waste_apart)
         m300.drop_tip()
 
     ctx.comment('\n remove residual supernatant TWB wash#3 (P20)\n')
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
+        # remove supernatant and drop tips
         m20.pick_up_tip()
         remove_supernatantp20(10, i, col)
         m20.drop_tip()
@@ -235,6 +293,7 @@ def run(ctx):
     ctx.comment('#'*3 + ' add EPM (parked tips), mix EPM ' + '#'*3)
     # add EPM
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
+        # add 20ul of epm over beads and park tips
         m20.pick_up_tip(park_tips_20.rows()[0][i+tip_park_start_col])
         m20.aspirate(20, epm, rate=0.75)
         m20.dispense(20, col, rate=0.75)
@@ -244,28 +303,29 @@ def run(ctx):
     mag_module.disengage()
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m20, 20)
+        # mix beads and drop tips
         m20.pick_up_tip(park_tips_20.rows()[0][i+tip_park_start_col])
         m20.mix(10, 18, col)
         m20.drop_tip()
-        
+
     # add indexes
     ctx.comment('#'*3 + ' add Illumina indexes ' + '#'*3)
-    for source_col, dest_col in zip(index_plate.rows()[0][
-                                                          index_start_col:
-                                                          index_start_col
-                                                          + num_col],
-                                    sample_plate.rows()[0]):
-        m20.pick_up_tip()
+    for i, (source_col, dest_col) in enumerate(
+            zip(index_plate.rows()[0][index_start_col: index_start_col + num_col],
+            sample_plate.rows()[0])):
+        m20.pick_up_tip(park_tips_20.rows()[0][i+tip_park_start_col+6])
+        # add indexes
         m20.aspirate(5, source_col, rate=0.75)
         m20.dispense(5, dest_col, rate=0.75)
         change_speeds(m20, 20)
+        # mix and drop tips
         m20.mix(10, 18, dest_col)
         m20.drop_tip()
-    
+
     ctx.comment(
-    '''
-    Seal the plate with microseal-B, (centrifuge the plate at 280g for 30sec). 
-    Place on the thermocycler and run the BLT PCR program. 
-    After completion, the plate can be safely stored at +2°C to +8°C.
-    '''
-    )
+        '''
+        Seal the plate with microseal-B, (centrifuge the plate at 280g for 30sec). 
+        Place on the thermocycler and run the BLT PCR program. 
+        After completion, the plate can be safely stored at +2°C to +8°C.
+        '''
+        )

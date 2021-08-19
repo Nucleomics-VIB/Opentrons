@@ -4,6 +4,7 @@
 .DS_Store
 
 # ignore local working folders
+**/archive
 FromLibrary/*
 atWork/*
 github_templates/*
