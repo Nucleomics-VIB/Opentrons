@@ -126,14 +126,17 @@ def run(ctx):
             m300.pick_up_tip()
 
     # universal removal with defaults: 
+    #   trash=False # (do not dispense what was aspitaed by default)
     #   delta_asp_height=-0.5 # (0.5mm below the top, in other steps set to 4mm above)
-    #   pip=m300 # (tip_200 multi-chanel)
     #   extra_vol=0 # dispense an extra 60microL to empty tips in one step)
+    #   disp_rate=1 # (default speed)
+    #   pip=m300 # (tip_200 multi-chanel)
     def remove_supernatant_uni(vol, index, loc, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
             Point(x=(loc.diameter/2-length_from_side)*side))
         pip.aspirate(vol, aspirate_loc)
+        # keep (default) or trash the tip content
         if trash:
             #vol2=vol+extra_vol
             #pip.dispense(vol2, waste_by_index[index].top(z=-5), rate=disp_rate)
