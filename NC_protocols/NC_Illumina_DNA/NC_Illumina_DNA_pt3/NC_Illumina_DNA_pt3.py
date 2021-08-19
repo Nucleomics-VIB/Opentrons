@@ -378,10 +378,9 @@ def run(ctx):
     ctx.delay(minutes=capture_duration)
 
     for i, (s_col, d_col) in enumerate(
-            zip(mag_plate.rows()[0][plate_A_start_col:
-                    plate_A_start_col + num_col],
-                plate_C.rows()[0][plate_C_start_col:
-                    plate_C_start_col + num_col] )
+            zip(
+                mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col],
+                plate_C.rows()[0][plate_C_start_col:plate_C_start_col+num_col])
             ):
         change_speeds(m20, 5)
         m20.pick_up_tip()
