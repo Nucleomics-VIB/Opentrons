@@ -125,22 +125,24 @@ def run(ctx):
             m300.reset_tipracks()
             m300.pick_up_tip()
 
-    # universal removal with defaults: 
+    # universal supernatant removal with defaults: 
     #   trash=False # (do not dispense what was aspitaed by default)
     #   delta_asp_height=-0.5 # (0.5mm below the top, in other steps set to 4mm above)
     #   extra_vol=0 # dispense an extra 60microL to empty tips in one step)
-    #   disp_rate=1 # (default speed)
+    #   blow_rate=94 # (default speed for m300, see https://docs.opentrons.com/v2/new_pipette.html?highlight=dispense)
     #   pip=m300 # (tip_200 multi-chanel)
-    def remove_supernatant_uni(vol, index, loc, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300):
+    def remove_supernatant_uni(loc, index, vol, trash=False, pip=m300, delta_asp_height=-0.5, extra_vol=0, blow_rate=94):
         side = -1 if index % 2 == 0 else 1
         aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
             Point(x=(loc.diameter/2-length_from_side)*side))
         pip.aspirate(vol, aspirate_loc)
         # keep (default) or trash the tip content
         if trash:
+            # using dispense before blow_out
             #vol2=vol+extra_vol
             #pip.dispense(vol2, waste_by_index[index].top(z=-5), rate=disp_rate)
-            pip.blow_out(waste_by_index[index].top(z=-5), rate=disp_rate)
+            pip.flow_rate.blow_out = blow_rate
+            pip.blow_out(waste_by_index[index].top(z=-5))
 
     # standard removal from aspiration height -0.5mm
     def remove_supernatant(vol, index, loc, trash=False, pip=m300):
@@ -325,7 +327,9 @@ def run(ctx):
             ):
             m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col])
             change_speeds(m300, 15)
+            # take 60 from top and keep in tip
             remove_supernatantTOP(60, i, sample)
+            # take additional 140 from bottom and trash content
             remove_supernatantBOT(140, i, sample, trash=True)
             if wash == 0:
                 m300.return_tip()
