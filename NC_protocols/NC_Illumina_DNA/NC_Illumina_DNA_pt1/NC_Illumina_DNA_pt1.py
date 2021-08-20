@@ -3,7 +3,7 @@ def get_values(*names):
     _all_values = json.loads(
         """
         {
-            "num_samp":16,
+            "num_samp":48,
             "p300_tip_start_col":1,
             "m20_mount":"left",
             "m300_mount":"right"
@@ -21,7 +21,7 @@ metadata = {
     'apiLevel': '2.10'
     }
 
-# script version 1.2; 2021_08_19 (SD)
+# script version 1.2; 2021_08_20 (SD)
 
 def run(ctx):
 
@@ -81,7 +81,7 @@ def run(ctx):
     # reagents
     mastermix = reagent_plate.rows()[0][0]
     water = reservoir.wells()[0]
-    waste = reservoir.wells()[5]
+    waste = reservoir.wells()[4]
 
     # add water to empty biorad plate
     ctx.comment('#'*3 + ' add water to final plate ' + '#'*3)

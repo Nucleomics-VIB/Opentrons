@@ -3,7 +3,7 @@ def get_values(*names):
     _all_values = json.loads(
         """
         {
-        "num_samp":16,
+        "num_samp":48,
         "plate_A_start_col":1,
         "plate_C_start_col":1,
         "tip_park_start_col":1,
@@ -30,7 +30,7 @@ metadata = {
     'apiLevel': '2.10'
     }
 
-# script version 1.1; 2021_08_18 (SD)
+# script version 1.1; 2021_08_20 (SD)
 
 def run(ctx):
 
@@ -124,66 +124,6 @@ def run(ctx):
             ctx.pause("Replace all 200ul tip racks, then click Resume")
             m300.reset_tipracks()
             m300.pick_up_tip()
-
-    # universal supernatant removal with defaults: 
-    #   trash=False # (do not dispense what was aspitaed by default)
-    #   delta_asp_height=-0.5 # (0.5mm below the top, in other steps set to 4mm above)
-    #   extra_vol=0 # dispense an extra 60microL to empty tips in one step)
-    #   blow_rate=94 # (default speed for m300, see https://docs.opentrons.com/v2/new_pipette.html?highlight=dispense)
-    #   pip=m300 # (tip_200 multi-chanel)
-    def remove_supernatant_uni(loc, index, vol, trash=False, pip=m300, delta_asp_height=-0.5, extra_vol=0, blow_rate=94):
-        side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        pip.aspirate(vol, aspirate_loc)
-        # keep (default) or trash the tip content
-        if trash:
-            # using dispense before blow_out
-            #vol2=vol+extra_vol
-            #pip.dispense(vol2, waste_by_index[index].top(z=-5), rate=disp_rate)
-            pip.flow_rate.blow_out = blow_rate
-            pip.blow_out(waste_by_index[index].top(z=-5))
-
-    # standard removal from aspiration height -0.5mm
-    def remove_supernatant(vol, index, loc, trash=False, pip=m300):
-        side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height-0.5).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        pip.aspirate(vol, aspirate_loc)
-        if trash:
-            pip.dispense(vol, waste2.top(z=-5))
-            pip.blow_out()
-
-    # removal from aspiration height + 4mm
-    def remove_supernatantTOP(vol, index, loc, trash=False, pip=m300):
-        side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height+4).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        pip.aspirate(vol, aspirate_loc)
-        if trash:
-            pip.dispense(vol, waste.top(z=-5))
-            pip.blow_out()
-    
-    # removal from the aspiration height -0.5mm
-    def remove_supernatantBOT(vol, index, loc, trash=False, pip=m300):
-        side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height-0.5).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        pip.aspirate(vol, aspirate_loc)
-        if trash:
-            vol2=vol+60
-            pip.dispense(vol2, waste.top(z=-5), rate=5)
-            pip.blow_out()
-
-    # remove residual ethanol with p20 tips
-    def remove_supernatantp20(vol, index, loc, trash=False, pip=m20):
-        side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height-0.5).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        pip.aspirate(vol, aspirate_loc)
-        if trash:
-            pip.dispense(vol, waste2.top(z=-5))
-            pip.blow_out()
     
     def mix_at_beads(vol, index, loc):
         side = 1 if index % 2 == 0 else -1
@@ -195,13 +135,34 @@ def run(ctx):
             m300.aspirate(vol, aspirate_loc)
             m300.dispense(vol, dispense_loc)
 
+    def remove_supernatant(vol, index, loc, delta_asp_height=-0.5):
+        side = -1 if index % 2 == 0 else 1
+        aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
+                Point(x=(loc.diameter/2-length_from_side)*side))
+        m300.aspirate(vol, aspirate_loc)
+        m300.dispense(vol, waste)
+        m300.blow_out()
+
+    # universal removal with defaults: 
+    # delta_asp_height=-0.5 # (0.5mm below the top, in other steps set to 4mm above)
+    # pip=m300 # (tip_200 multi-chanel)
+    # extra_vol=0 # dispense an extra 60microL to empty tips in one step)
+    def remove_supernatant_uni(vol, index, loc, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300):
+        side = -1 if index % 2 == 0 else 1
+        aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
+                Point(x=(loc.diameter/2-length_from_side)*side))
+        pip.aspirate(vol, aspirate_loc)
+        if trash:
+            vol2=vol+extra_vol
+            pip.dispense(vol2, waste_by_index[index].top(z=-5), rate=disp_rate)
+            pip.blow_out()
+
     # reagents
-    rsb_buffer = reservoir.wells()[3]
-    ethanol = reservoir.wells()[4:6]
-    diluted_magbeads = reservoir.wells()[7]
-    waste = reservoir.wells()[11]
-    waste2 = reservoir.wells()[10]
-    # waste_by_index = reservoir.wells()[6:11]
+    rsb_buffer = reservoir.wells()[0]
+    ethanol = reservoir.wells()[1:3]
+    diluted_magbeads = reservoir.wells()[3]
+    waste = reservoir.wells()[5]
+    waste_by_index = reservoir.wells()[6:12]
 
     # engage, incubate, and transfer the supernatant to the right half of the same plate (col1 => col7, col2 => col8, etc)
     ctx.comment('#'*3 
@@ -219,7 +180,7 @@ def run(ctx):
         ):
         change_speeds(m300, 15)
         pick_up300()
-        remove_supernatant(22.5, i, s_col)
+        remove_supernatant_uni(22.5, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=0.25, pip=m300)
         m300.dispense(22.5, d_col)
         m300.drop_tip()
 
@@ -234,7 +195,7 @@ def run(ctx):
 
     # pre-mix diluted beads, add to 'right side' of the sample plate (A7, A8 ...)
     ctx.comment('#'*3 
-        + ' pre-mix diluted beads in the reservoir, add beads to the right side of the plate on the magnetic module (position #1) ' 
+        + ' pre-mix diluted beads in the reservoir (column 4), add beads to the right side of the plate on the magnetic module (position #1) ' 
         + '#'*3)
     mag_module.disengage()  
     change_speeds(m300, 70)
@@ -242,7 +203,7 @@ def run(ctx):
     m300.mix(10, 50*num_col, diluted_magbeads)
     m300.drop_tip()
 
-    for col in mag_plate.rows()[0][plate_A_start_col+6:plate_A_start_col+6+num_col]:
+    for col in mag_plate.rows()[0][plate_A_start_col+6: plate_A_start_col+6+num_col]:
         pick_up300()
         m300.aspirate(42.5, diluted_magbeads)
         m300.dispense(42.5, col)
@@ -267,7 +228,7 @@ def run(ctx):
         ):
         change_speeds(m300, 15)
         pick_up300()
-        remove_supernatant(62.5, i, s_col)
+        remove_supernatant_uni(62.5, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=0.25, pip=m300)
         m300.dispense(62.5, d_col)
         change_speeds(m300, 70)
         m300.mix(10, 55, d_col)
@@ -285,8 +246,8 @@ def run(ctx):
         '''
         Remove the plate from the magnetic module in position #1. 
         Replace with the plate from position #2. 
-        Add at least 5ml 70% ethanol to reservoir (columns 4, 5, and 6). 
-        Add at least 2ml RSB to reservoir (column 3). 
+        Add at least 5ml 70% ethanol to reservoir (columns 2 and 3). 
+        Add at least 2ml RSB to reservoir (column 1). 
         Empty the trash if needed. 
         Select "Resume" in the Opentrons App. 
         '''
@@ -297,10 +258,12 @@ def run(ctx):
     mag_module.engage(height=magnet_height)
     ctx.delay(minutes=capture_duration)
     for i, s_col in enumerate(
-            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
+            mag_plate.rows()[0][plate_A_start_col:
+                plate_A_start_col + num_col]
+            ):
         change_speeds(m300, 15)
         pick_up300()
-        remove_supernatant(65, i, s_col, trash=True)
+        remove_supernatant(65, i, s_col, delta_asp_height=-0.5)
         m300.drop_tip()
 
     # two ethanol washes
@@ -309,8 +272,10 @@ def run(ctx):
         change_speeds(m300, 35)
         pick_up300()
         for eth, sample in zip(
-                ethanol*num_col,
-                mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
+            ethanol*num_col,
+            mag_plate.rows()[0][plate_A_start_col:
+                plate_A_start_col + num_col]
+            ):
             m300.aspirate(185, eth)
             ctx.delay(seconds=1.5)
             m300.dispense(185, sample.top())
@@ -318,13 +283,13 @@ def run(ctx):
         m300.drop_tip()
         ctx.delay(seconds=10)
         for i, sample in enumerate(
-                mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
+            mag_plate.rows()[0][plate_A_start_col:
+                plate_A_start_col+num_col]
+            ):
             m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col])
             change_speeds(m300, 15)
-            # take 60 from top and keep in tip
-            remove_supernatantTOP(60, i, sample)
-            # take additional 140 from bottom and trash content
-            remove_supernatantBOT(140, i, sample, trash=True)
+            remove_supernatant_uni(60, i, sample, trash=False, delta_asp_height=4.0, extra_vol=0, disp_rate=0.25, pip=m300)
+            remove_supernatant_uni(140, i, sample, trash=True, delta_asp_height=-0.5, extra_vol=60, disp_rate=0.25, pip=m300)
             if wash == 0:
                 m300.return_tip()
             else:
@@ -333,9 +298,11 @@ def run(ctx):
     # remove excess with p20
     ctx.comment('#'*3 + ' remove leftover Ethanol with p20 ' + '#'*3)
     for i, sample in enumerate(
-            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col + num_col]):
+        mag_plate.rows()[0][plate_A_start_col:
+            plate_A_start_col + num_col]
+        ):
         m20.pick_up_tip()
-        remove_supernatantp20(20, i, sample, pip=m20)
+        remove_supernatant_uni(20, i, sample, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
         m20.drop_tip()
 
     # evaporate residual Ethanol then add RSB
@@ -344,7 +311,9 @@ def run(ctx):
     # add RSB (temporary 33µl; maybe 32µl would be feasible too)
     ctx.comment('#'*3 + ' add RSB to plate B in position #1 ' + '#'*3)
     for i, sample in enumerate(
-            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
+        mag_plate.rows()[0][plate_A_start_col:
+            plate_A_start_col+num_col]
+        ):
         change_speeds(m300, 15)
         m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col+6])
         m300.aspirate(33, rsb_buffer)
@@ -361,7 +330,9 @@ def run(ctx):
     ctx.comment('#'*3 + ' resuspend beads ' + '#'*3)
     mag_module.disengage()
     for i, sample in enumerate(
-            mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col]):
+        mag_plate.rows()[0][plate_A_start_col:
+            plate_A_start_col + num_col]
+        ):
         change_speeds(m300, 70)
         m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col+6])
         mix_at_beads(25, i, sample)
@@ -379,14 +350,17 @@ def run(ctx):
 
     for i, (s_col, d_col) in enumerate(
             zip(
-                mag_plate.rows()[0][plate_A_start_col:plate_A_start_col+num_col],
-                plate_C.rows()[0][plate_C_start_col:plate_C_start_col+num_col])
+                mag_plate.rows()[0][plate_A_start_col:
+                    plate_A_start_col + num_col],
+                plate_C.rows()[0][plate_C_start_col:
+                    plate_C_start_col + num_col]
+                )
             ):
         change_speeds(m20, 5)
         m20.pick_up_tip()
-        remove_supernatant(15, i, s_col, pip=m20)
+        remove_supernatant_uni(15, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
         m20.dispense(15, d_col)
-        remove_supernatant(15, i, s_col, pip=m20)
+        remove_supernatant_uni(15, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
         m20.dispense(15, d_col)
         m20.drop_tip()
 

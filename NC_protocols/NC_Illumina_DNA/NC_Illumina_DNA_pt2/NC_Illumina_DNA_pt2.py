@@ -27,7 +27,7 @@ metadata = {
     'apiLevel': '2.10'
     }
 
-# script version 1.2; 2021_08_19 (SD)
+# script version 1.2; 2021_08_20 (SD)
 
 def run(ctx):
 
@@ -61,9 +61,6 @@ def run(ctx):
     # shift index to 0-based
     index_start_col = int(index_start_col)-1
     tip_park_start_col = int(tip_park_start_col)-1
-
-    # globally change magnetic capture duration (1 for testing)
-    capture_duration = 1
 
     # load labware
     mag_module = ctx.load_module('magnetic module gen2', 
@@ -110,35 +107,39 @@ def run(ctx):
     # turn lights ON (comment out to turn OFF)
     ctx.set_rail_lights(True)
 
+    # globally change instrument values
+    magnet_height = 11
+
+    # globally change magnetic capture duration (1 for testing)
+    capture_duration = 1
+
     # define custom routines
     def change_speeds(pip, speed):
         pip.flow_rate.aspirate = speed
         pip.flow_rate.dispense = speed
 
-    def remove_supernatant(vol, index, loc):
+    def remove_supernatant(vol, index, loc, delta_asp_height=-1.0):
         side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height-1).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
+        aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
+                Point(x=(loc.diameter/2-length_from_side)*side))
         m300.aspirate(vol, aspirate_loc)
         m300.dispense(vol, waste)
         m300.blow_out()
 
-    def remove_supernatant_apart(vol, index, loc, waste_apart):
+    # universal removal with defaults: 
+    # delta_asp_height=-0.5 # (0.5mm below the top, in other steps set to 4mm above)
+    # pip=m300 # (tip_200 multi-chanel)
+    # extra_vol=0 # dispense an extra 60microL to empty tips in one step)
+    def remove_supernatant_uni(vol, index, loc, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300):
         side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height-1).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        m300.aspirate(vol, aspirate_loc)
-        m300.dispense(vol, waste_apart)
-        m300.blow_out()
+        aspirate_loc = loc.bottom(z=asp_height+delta_asp_height).move(
+                Point(x=(loc.diameter/2-length_from_side)*side))
+        pip.aspirate(vol, aspirate_loc)
+        if trash:
+            vol2=vol+extra_vol
+            pip.dispense(vol2, waste_by_index[index].top(z=-5), rate=disp_rate)
+            pip.blow_out()
 
-
-    def remove_supernatantp20(vol, index, loc):
-        side = -1 if index % 2 == 0 else 1
-        aspirate_loc = loc.bottom(z=asp_height-1).move(
-            Point(x=(loc.diameter/2-length_from_side)*side))
-        m20.aspirate(vol, aspirate_loc)
-        m20.dispense(vol, waste)
-        m20.blow_out()
 
     def mix_at_beads(vol, index, loc):
         side = 1 if index % 2 == 0 else -1
@@ -151,11 +152,11 @@ def run(ctx):
             m300.dispense(vol, dispense_loc)
 
     # reagents
-    twb = reservoir.wells()[1]
     tsb = reagent_plate.rows()[0][1]
     epm = reagent_plate.rows()[0][2]
-    waste = reservoir.wells()[4]
-    waste_per_column = reservoir.wells()[5:11]
+    twb = reservoir.wells()[1]
+    waste = reservoir.wells()[5]
+    waste_by_index = reservoir.wells()[6:12]
 
     # transfer TSB from mastermix plate to sample plate
     ctx.comment('#'*3 
@@ -188,7 +189,7 @@ def run(ctx):
         change_speeds(m300, 15)
         # remove supernatant and drop tips
         m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col+6])
-        remove_supernatant(35, i, col)
+        remove_supernatant(35, i, col, delta_asp_height=-1.0)
         m300.drop_tip()
         # add 50ul of twb over beads and park tips
         m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col])
@@ -210,12 +211,11 @@ def run(ctx):
     mag_module.engage()
     ctx.delay(minutes=capture_duration)
 
-    for i, (waste_apart, col) in enumerate(
-            zip(waste_per_column*num_col, sample_plate.rows()[0][:num_col])):
+    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m300, 15)
         # remove supernatant and drop tips
         m300.pick_up_tip(park_tips_300.rows()[0][i+tip_park_start_col])
-        remove_supernatant_apart(55, i, col, waste_apart)
+        remove_supernatant_uni(55, i, col, trash=True, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300)
         m300.drop_tip()
         # add 50ul of twb over beads and park tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col])
@@ -237,12 +237,11 @@ def run(ctx):
     mag_module.engage()
     ctx.delay(minutes=capture_duration)
 
-    for i, (waste_apart, col) in enumerate(
-            zip(waste_per_column*num_col, sample_plate.rows()[0][:num_col])):
+    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m300, 15)
         # remove supernatant and drop tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col])
-        remove_supernatant_apart(55, i, col, waste_apart)
+        remove_supernatant_uni(55, i, col, trash=True, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300)
         m300.drop_tip()
         # add 50ul of twb over beads and park tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col+6])
@@ -275,19 +274,18 @@ def run(ctx):
     ctx.delay(minutes=capture_duration)
 
     ctx.comment('\n remove supernatant TWB wash#3 (P300)\n')
-    for i, (waste_apart, col) in enumerate(
-            zip(waste_per_column*num_col, sample_plate.rows()[0][:num_col])):
+    for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         change_speeds(m300, 15)
         # remove supernatant and drop tips
         m300.pick_up_tip(park2_tips_300.rows()[0][i+tip_park_start_col+6])
-        remove_supernatant_apart(55, i, col, waste_apart)
+        remove_supernatant_uni(55, i, col, trash=True, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m300)
         m300.drop_tip()
 
     ctx.comment('\n remove residual supernatant TWB wash#3 (P20)\n')
     for i, col in enumerate(sample_plate.rows()[0][:num_col]):
         # remove supernatant and drop tips
         m20.pick_up_tip()
-        remove_supernatantp20(10, i, col)
+        remove_supernatant_uni(10, i, col, trash=True, delta_asp_height=-0.5, extra_vol=0, disp_rate=1, pip=m20)
         m20.drop_tip()
 
     ctx.comment('#'*3 + ' add EPM (parked tips), mix EPM ' + '#'*3)
