@@ -25,7 +25,7 @@ metadata = {
     'protocolName': 'NC_Illumina_DNA_pt3',
     'author': 'Rami Farawi <rami.farawi@opentrons.com>, \
         Stefaan Derveaux <stefaan.derveaux@vib.be>',
-    'description': 'Illumina DNA part3 (16 samples) - Clean up Libraries',
+    'description': 'Illumina DNA part3 (8-48 samples) - Clean up Libraries',
     'source': 'Custom Protocol Request',
     'apiLevel': '2.10'
     }
@@ -111,7 +111,7 @@ def run(ctx):
     magnet_height = 11
 
     # globally change magnetic capture duration (1 for testing)
-    capture_duration = 1
+    capture_duration = 5
     
     def change_speeds(pip, speed):
         pip.flow_rate.aspirate = speed
