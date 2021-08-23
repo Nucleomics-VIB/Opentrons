@@ -16,6 +16,8 @@ Links:
 * Amplify Tagmented DNA using the lab thermocycler
 * [Cleanup Libraries](../NC_Illumina_DNA_pt3)
 
+![deck_48]("./Deck layout pt1_48s.png")
+
 ---
 ## Materials
 
