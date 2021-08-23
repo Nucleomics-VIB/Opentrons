@@ -24,7 +24,7 @@ Links:
 * [P20 multi-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
 * [20ul Opentrons tipracks](https://shop.opentrons.com/collections/opentrons-tips/products/opentrons-10ul-tips)
 * [P300 multi-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
-* 5x [300ul Opentrons tipracks](https://shop.opentrons.com/collections/opentrons-tips/products/opentrons-300ul-tips)
+* 4x [300ul Opentrons tipracks](https://shop.opentrons.com/collections/opentrons-tips/products/opentrons-300ul-tips)
 
 
 ---
