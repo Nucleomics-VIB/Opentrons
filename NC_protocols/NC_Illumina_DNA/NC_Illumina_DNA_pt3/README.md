@@ -40,6 +40,10 @@ Prepare solutions and fill the reservoir slots when prompted
 * col10: waste
 * col11: waste
 
+<img src="Deck%20layout%20pt3_48s.png"
+     alt="pt1_deck_48"
+     style="float: left; margin-right: 10px;" />
+
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
 

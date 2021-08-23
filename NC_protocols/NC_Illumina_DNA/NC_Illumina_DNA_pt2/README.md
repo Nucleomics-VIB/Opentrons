@@ -45,6 +45,10 @@ Fill the reservoir and reagent plate with required solutions when prompted.
 * col3: EPM
 * col4: EPM
 
+<img src="Deck%20layout%20pt2_48s.png"
+     alt="pt1_deck_48"
+     style="float: left; margin-right: 10px;" />
+
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
 
