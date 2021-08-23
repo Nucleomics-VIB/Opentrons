@@ -5,6 +5,7 @@
 
 # ignore local working folders
 **/archive
+**/docs
 FromLibrary/*
 atWork/*
 github_templates/*
