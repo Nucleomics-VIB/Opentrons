@@ -33,12 +33,13 @@ Links:
 Prepare solutions and fill the reservoir slots when prompted
 
 ### reservoir layout: **(New empty reservoir)**
-* col3: RSB
-* col4: 70% Ethanol
-* col5: 70% Ethanol
-* col6: 70% Ethanol
-* col10: waste
-* col11: waste
+* col1: RSB
+* col2: 70% Ethanol
+* col3: 70% Ethanol
+* col4: diluted beads
+* col5 -empty-
+* col6 general waste
+* col7-col12 (individual wastes per column)
 
 <img src="Deck%20layout%20pt3_48s.png"
      alt="pt1_deck_48"
