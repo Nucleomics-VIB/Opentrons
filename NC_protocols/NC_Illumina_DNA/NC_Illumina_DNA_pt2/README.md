@@ -35,9 +35,11 @@ Fill the reservoir and reagent plate with required solutions when prompted.
 ### reservoir layout: **(the reservoir from Part-1 remains on deck for this protocol)**
 * col1: water (from Part-1)
 * col2: TWB
-* col3: waste2 (empty)
-* col4: waste3 (empty)
+* col3: (empty)
+* col4: (empty)
 * col5: waste (from Part-1)
+* col6 general waste
+* col7-col12 (individual wastes per column)
 
 ### reagent plate layout: **(the plate from Part-1 remains on deck for this protocol)**
 * col1: mastermix (from Part-1)
