@@ -180,7 +180,7 @@ def run(ctx):
         ):
         change_speeds(m300, 15)
         pick_up300()
-        remove_supernatant_uni(22.5, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=0.25, pip=m300)
+        remove_supernatant_uni(vol=22.5, index=i, loc=s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=0.25, pip=m300)
         m300.dispense(22.5, d_col)
         m300.drop_tip()
 
@@ -228,7 +228,7 @@ def run(ctx):
         ):
         change_speeds(m300, 15)
         pick_up300()
-        remove_supernatant_uni(62.5, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=0.25, pip=m300)
+        remove_supernatant_uni(vol=62.5, index=i, loc=s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=0.25, pip=m300)
         m300.dispense(62.5, d_col)
         change_speeds(m300, 70)
         m300.mix(10, 55, d_col)
@@ -288,8 +288,8 @@ def run(ctx):
             ):
             m300.pick_up_tip(park_rack.rows()[0][i+tip_park_start_col])
             change_speeds(m300, 15)
-            remove_supernatant_uni(60, i, sample, trash=False, delta_asp_height=4.0, extra_vol=0, disp_rate=0.25, pip=m300)
-            remove_supernatant_uni(140, i, sample, trash=True, delta_asp_height=-0.5, extra_vol=60, disp_rate=0.25, pip=m300)
+            remove_supernatant_uni(vol=60, index=i, loc=sample, trash=False, delta_asp_height=4.0, extra_vol=0, disp_rate=0.25, pip=m300)
+            remove_supernatant_uni(vol=140, index=i, loc=sample, trash=True, delta_asp_height=-0.5, extra_vol=60, disp_rate=0.25, pip=m300)
             if wash == 0:
                 m300.return_tip()
             else:
@@ -302,7 +302,7 @@ def run(ctx):
             plate_A_start_col + num_col]
         ):
         m20.pick_up_tip()
-        remove_supernatant_uni(20, i, sample, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
+        remove_supernatant_uni(vol=20, index=i, loc=sample, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
         m20.drop_tip()
 
     # evaporate residual Ethanol then add RSB
