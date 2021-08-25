@@ -1,4 +1,4 @@
-<p><a href="http://www.nucleomics.be/" target="_blank"><img src="NC_logo.png" width=200 height=78\></a></p>
+<p><a href="http://www.nucleomics.be/" target="_blank"><img src="http://www.nucleomics.be/wp-content/uploads/nucleomics_core_rgb_pos_wout-e1540590522530.png" width=200 height=78\></a></p>
 This work is owned by the <b> <a href="https://www.nucleomics.be" target="_blank">Nucleomics Core</a> </b>; the 'sequencing' facilities of <b> <a href="http://www.vib.be" target="_blank">VIB</a> </b>.
 
 This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License
