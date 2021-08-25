@@ -200,7 +200,7 @@ def run(ctx):
     mag_module.disengage()  
     change_speeds(m300, 70)
     pick_up300()
-    m300.mix(10, 50*num_col, diluted_magbeads)
+    m300.mix(10, 50, diluted_magbeads)
     m300.drop_tip()
 
     for col in mag_plate.rows()[0][plate_A_start_col+6: plate_A_start_col+6+num_col]:
@@ -358,10 +358,10 @@ def run(ctx):
             ):
         change_speeds(m20, 5)
         m20.pick_up_tip()
-        remove_supernatant_uni(15, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
-        m20.dispense(15, d_col)
-        remove_supernatant_uni(15, i, s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
-        m20.dispense(15, d_col)
+        # transfer twice 15uL with m20
+        for _ in range(2):
+            remove_supernatant_uni(vol=15, index=i, loc=s_col, trash=False, delta_asp_height=-0.5, extra_vol=0, disp_rate=1.0, pip=m20)
+            m20.dispense(15, d_col)
         m20.drop_tip()
 
     ctx.comment('\n All done, plate C in position #3 is ready for sequencing \n')
