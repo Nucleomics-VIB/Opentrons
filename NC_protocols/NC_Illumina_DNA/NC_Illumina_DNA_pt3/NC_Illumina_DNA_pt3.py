@@ -271,6 +271,7 @@ def run(ctx):
     for wash in range(2):
         change_speeds(m300, 35)
         pick_up300()
+        # alternate ethanol aspirate between two reservoirs
         for eth, sample in zip(
             ethanol*num_col,
             mag_plate.rows()[0][plate_A_start_col:
