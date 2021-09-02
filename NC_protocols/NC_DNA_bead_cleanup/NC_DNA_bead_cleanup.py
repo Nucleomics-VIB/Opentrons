@@ -1,3 +1,40 @@
+import math
+
+# Pipette: Specify your p300 multi- or single-channel
+# Pipette Mount: Specify which mount (left or right) your pipette is on.
+# Sample number: Customize the number of samples to run per protocol.
+# A multiple of 8 is recommended when you are using a multichannel pipette.
+# Sample volume: Specify the starting volume (in uL) of the input sample.
+# Bead Ratio: Customize the ratio of beads for left or right side
+# size-selection of fragments.
+# The default bead ratio is 1.8x the input sample volume.
+# Elution Volume: Specify the final volume (in uL) to elute the purified
+# nucleic acid. The Opentrons MagDeck only supports elution volumes above 10µL.
+# Incubation Time: Specify the amount of time (in minutes) that the bead
+# solution and input sample interact.
+# Settling Time: Specify the amount of time (in minutes) needed to pellet the
+# beads. Higher volumes may require a longer settling time.
+# Drying Time: Specify the drying time (in minutes) needed after wash steps.
+
+# Container options: to be able to further use the same container
+# beads_position (default to 0)
+# ethanol_position (default to 1)
+# elution_buffer_position (default to 2)
+# waste_position (set by default to the last column of the reservoir: -1)
+
+
+metadata = {
+    'protocolName': 'DNA Bead Cleanup',
+    'description': 'using multichannel m300 for speedup',
+    'author': 'Opentrons <protocols@opentrons.com> \
+        NucleomicsCore <nucleomics@vib.be>',
+    'source': 'NC Protocol Library',
+    'apiLevel': '2.10'
+    }
+
+# version 1.0 SP@NC 2021/08/25
+
+
 def get_values(*names):
     import json
     _all_values = json.loads("""{
@@ -21,79 +58,50 @@ def get_values(*names):
     return [_all_values[n] for n in names]
 
 
-import math
-
-metadata = {
-    'protocolName': 'DNA Bead Cleanup',
-    'description': 'using multichannel m300 for speedup',
-    'author': 'Opentrons <protocols@opentrons.com> \
-        NucleomicsCore <nucleomics@vib.be>',
-    'source': 'NC Protocol Library',
-    'apiLevel': '2.10'
-    }
-
-# version 1.0 SP@NC 2021/08/25
-
-# Pipette: Specify your p300 multi- or single-channel
-# Pipette Mount: Specify which mount (left or right) your pipette is on.
-# Sample number: Customize the number of samples to run per protocol. A multiple of 8 is recommended when you are using a multichannel pipette.
-# Sample volume: Specify the starting volume (in uL) of the input sample.
-# Bead Ratio: Customize the ratio of beads for left or right side size-selection of fragments. The default bead ratio is 1.8x the input sample volume.
-# Elution Volume: Specify the final volume (in uL) to elute the purified nucleic acid. The Opentrons MagDeck only supports elution volumes above 10 µL.
-# Incubation Time: Specify the amount of time (in minutes) that the bead solution and input sample interact.
-# Settling Time: Specify the amount of time (in minutes) needed to pellet the beads. Higher volumes may require a longer settling time.
-# Drying Time: Specify the drying time (in minutes) needed after wash steps.
-
-## Container options: to be able to further use the same container
-# beads_position (default to 0)
-# ethanol_position (default to 1)
-# elution_buffer_position (default to 2)
-# waste_position (set by default to the last column of the reservoir: -1)
-
 def run(ctx):
 
-    [mag_mod, 
-    pipette_type, 
-    pipette_mount, 
+    [mag_mod,
+    pipette_type,
+    pipette_mount,
     input_plate_type,
     output_plate_type,
-    sample_number, 
+    sample_number,
     sample_volume,
-    bead_ratio, 
+    bead_ratio,
     beads_position,
     ethanol_position,
     elution_buffer_position,
     waste_position,
-    elution_buffer_volume, 
-    incubation_time, 
+    elution_buffer_volume,
+    incubation_time,
     capture_time,
     drying_time] = get_values(  # noqa: F821
-        "mag_mod", 
-        "pipette_type", 
-        "pipette_mount", 
+        "mag_mod",
+        "pipette_type",
+        "pipette_mount",
         "input_plate_type",
         "output_plate_type",
         "sample_number",
-        "sample_volume", 
+        "sample_volume",
         "bead_ratio",
         "beads_position",
         "ethanol_position",
         "elution_buffer_position",
         "waste_position",
         "elution_buffer_volume",
-        "incubation_time", 
-        "capture_time", 
+        "incubation_time",
+        "capture_time",
         "drying_time"
     )
 
-    mag_deck = ctx.load_module(mag_mod, 
-        '1')
+    mag_deck = ctx.load_module(mag_mod,
+                               '1')
     mag_plate = mag_deck.load_labware(
         input_plate_type,
         'input plate')
     output_plate = ctx.load_labware(
-        output_plate_type, 
-        '2', 
+        output_plate_type,
+        '2',
         'output plate')
 
     total_tips = sample_number*8
@@ -138,7 +146,8 @@ def run(ctx):
         output = [col for col in output_plate.rows()[0][:col_num]]
 
     # Define reagents and liquid waste
-    # by default these are 0, 1, and 2 but can be changed to further use the same reservoir
+    # by default these are 0, 1, and 2
+    #   (can be more to further use the same reservoir)
     beads = reagent_container.wells()[beads_position]
     ethanol = reagent_container.wells()[ethanol_position]
     elution_buffer = reagent_container.wells()[elution_buffer_position]
@@ -153,18 +162,17 @@ def run(ctx):
 
     ctx.pause(
         '''
-        make sure you have placed enough labelled PCR strips on the Alu-block (position #2) to receive the purified DNA 
-        select "Resume" in the Opentrons App. 
+        make sure you have placed enough labelled PCR strips
+        on the Alu-block (position #2) to receive the purified DNA
+        select "Resume" in the Opentrons App.
         '''
         )
 
-    ctx.comment(
-    '''
+    ctx.comment('''
     #####################
     ### Bead DNA capture
     #####################
-    '''
-    )
+    ''')
 
     for target in samples:
         pipette.pick_up_tip()
@@ -181,27 +189,23 @@ def run(ctx):
     mag_deck.engage()
     ctx.delay(minutes=capture_time)
 
-    ctx.comment(
-    '''
+    ctx.comment('''
     ############################
     ### Remove bead supernatant
     ############################
-    '''
-    )
+    ''')
 
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 150
     for target in samples:
         pipette.transfer(total_vol, target, liquid_waste, blow_out=True)
 
-    ctx.comment(
-    '''
+    ctx.comment('''
     ######################################
-    ### Wash beads twice with 70% ethanol 
+    ### Wash beads twice with 70% ethanol
     ### (using air_gap to prevent leak)
     ######################################
-    '''
-    )
+    ''')
 
     air_vol = pipette.max_volume * 0.1
     for cycle in range(2):
@@ -218,13 +222,11 @@ def run(ctx):
     # Disengage MagDeck
     mag_deck.disengage()
 
-    ctx.comment(
-    '''
+    ctx.comment('''
     #########################
     ### Elute DNA from beads
     #########################
-    '''
-    )
+    ''')
 
     if elution_buffer_volume/2 > pipette.max_volume:
         mix_vol = pipette.max_volume
@@ -244,23 +246,19 @@ def run(ctx):
     mag_deck.engage()
     ctx.delay(minutes=capture_time)
 
-    ctx.comment(
-    '''
+    ctx.comment('''
     #######################################################
     ### Transfer clean DNA to the PCR-strip on position #2
     #######################################################
-    '''
-    )
+    ''')
 
     for target, dest in zip(samples, output):
         pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
 
-    ctx.comment(
-      '''
+    ctx.comment('''
       ##########################################################
       ## All done!                                            ##
       ## the PCR strip(s) tubes (#2) now contain purified DNA ##
       ## make sure to label them!                             ##
       ##########################################################
-      '''
-      )
+      ''')
