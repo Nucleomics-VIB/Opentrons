@@ -1,5 +1,0 @@
-{
-    "notebook.displayOrder": [],
-    "cornflakes.linter.executablePath": "/opt/miniconda3/envs/opentrons/bin/flake8",
-    "cornflakes.linter.run": "onType"
-}
