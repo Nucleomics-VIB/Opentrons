@@ -320,10 +320,9 @@ def run(ctx):
         m20.mix(10, 18, dest_col)
         m20.drop_tip()
 
-    ctx.comment(
-        '''
+    ctx.comment('''
+    
         Seal the plate with microseal-B, (centrifuge the plate at 280g for 30sec). 
         Place on the thermocycler and run the BLT PCR program. 
         After completion, the plate can be safely stored at +2°C to +8°C.
-        '''
-        )
+        ''')
