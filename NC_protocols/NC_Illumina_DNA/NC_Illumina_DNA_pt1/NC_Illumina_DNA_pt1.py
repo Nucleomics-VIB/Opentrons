@@ -1,3 +1,15 @@
+metadata = {
+    'protocolName': 'NC_Illumina_DNA_pt1',
+    'author': 'Rami Farawi <rami.farawi@opentrons.com>, \
+        Stefaan Derveaux <stefaan.derveaux@vib.be>',
+    'description': 'Illumina DNA part1 (8-48 samples) - Tagment DNA',
+    'source': 'Custom Protocol Request',
+    'apiLevel': '2.10'
+    }
+
+# script version 1.2; 2021_08_20 (SD)
+
+
 def get_values(*names):
     import json
     _all_values = json.loads(
@@ -12,27 +24,16 @@ def get_values(*names):
     return [_all_values[n] for n in names]
 
 
-metadata = {
-    'protocolName': 'NC_Illumina_DNA_pt1',
-    'author': 'Rami Farawi <rami.farawi@opentrons.com>, \
-        Stefaan Derveaux <stefaan.derveaux@vib.be>',
-    'description': 'Illumina DNA part1 (8-48 samples) - Tagment DNA',
-    'source': 'Custom Protocol Request',
-    'apiLevel': '2.10'
-    }
-
-# script version 1.2; 2021_08_20 (SD)
-
 def run(ctx):
 
     # get user inputs
-    [num_samp, 
+    [num_samp,
     p300_tip_start_col,
-    m20_mount, 
+    m20_mount,
     m300_mount] = get_values(  # noqa: F821
-      "num_samp", 
-      "p300_tip_start_col", 
-      "m20_mount", 
+      "num_samp",
+      "p300_tip_start_col",
+      "m20_mount",
       "m300_mount")
 
     # check p300_tip_start_col in valid range
@@ -44,34 +45,43 @@ def run(ctx):
     p300_tip_start_col = p300_tip_start_col-1
 
     # load labware
-    mag_module = ctx.load_module('magnetic module gen2', 
+    mag_module = ctx.load_module(
+        'magnetic module gen2',
         '1')
-    reagent_plate = mag_module.load_labware('biorad_96_wellplate_200ul_pcr', 
+    reagent_plate = mag_module.load_labware(
+        'biorad_96_wellplate_200ul_pcr',
         label='Mastermix Plate')
-    samples = ctx.load_labware('biorad_96_wellplate_200ul_pcr', 
-        '2', 
+    samples = ctx.load_labware(
+        'biorad_96_wellplate_200ul_pcr',
+        '2',
         label='Sample Plate')
-    final_plate = ctx.load_labware('biorad_96_wellplate_200ul_pcr', 
-        '3', 
+    final_plate = ctx.load_labware(
+        'biorad_96_wellplate_200ul_pcr',
+        '3',
         label='Final Plate')
-    reservoir = ctx.load_labware('nest_12_reservoir_15ml', 
-        '4', 
+    reservoir = ctx.load_labware(
+        'nest_12_reservoir_15ml',
+        '4',
         label='Reservoir')
-    tiprack20 = [ctx.load_labware('opentrons_96_filtertiprack_20ul', 
-        slot, 
+    tiprack20 = [ctx.load_labware(
+        'opentrons_96_filtertiprack_20ul',
+        slot,
         label='tip_20')
             for slot in ['5', '6', '7']]
-    tiprack300 = ctx.load_labware('opentrons_96_filtertiprack_200ul', 
-        '8', 
+    tiprack300 = ctx.load_labware(
+        'opentrons_96_filtertiprack_200ul',
+        '8',
         label='tip_200')
 
     # load instrument
     # p20_multi_gen2: left, tiprack20 (3)
     # p300_multi_gen2: right, tiprack300 (1)
-    m20 = ctx.load_instrument('p20_multi_gen2', 
+    m20 = ctx.load_instrument(
+        'p20_multi_gen2',
         m20_mount,
         tip_racks=tiprack20)
-    m300 = ctx.load_instrument('p300_multi_gen2', 
+    m300 = ctx.load_instrument(
+        'p300_multi_gen2',
         m300_mount,
         tip_racks=[tiprack300])
 
@@ -125,11 +135,9 @@ def run(ctx):
         m20.mix(14, 18, col, rate=6.0)
         m20.mix(1, 18, col)
         m20.drop_tip()
-    
-    ctx.comment(
-    '''
-    Seal the plate with microseal-B. 
-    Place it on the pre-programmed thermocycler and run the TAG program. 
-    At completion, proceed immediately to part 2. 
-    '''
-    )
+
+    ctx.comment('''
+    Seal the plate with microseal-B.
+    Place it on the pre-programmed thermocycler and run the TAG program.
+    At completion, proceed immediately to part 2.
+    ''')
