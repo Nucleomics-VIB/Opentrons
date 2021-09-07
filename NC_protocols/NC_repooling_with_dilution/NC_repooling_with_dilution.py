@@ -147,6 +147,7 @@ def run(ctx: protocol_api.ProtocolContext):
         if water_counter < 0:
             water_counter = 1000
             wt_idx += 1
+        # TBD, check if the 6 water tubes have been used and ask a refill
 
         ctx.comment(
             '\n' + '#'*2 + ' taking ' + str(water_vol) +
