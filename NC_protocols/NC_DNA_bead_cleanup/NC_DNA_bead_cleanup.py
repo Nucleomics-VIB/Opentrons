@@ -94,8 +94,9 @@ def run(ctx):
         "drying_time"
     )
 
-    mag_deck = ctx.load_module(mag_mod,
-                               '1')
+    mag_deck = ctx.load_module(
+        mag_mod,
+        '1')
     mag_plate = mag_deck.load_labware(
         input_plate_type,
         'input plate')
@@ -127,19 +128,23 @@ def run(ctx):
         # single channel pipet
         if sample_number <= 5:
             reagent_container = ctx.load_labware(
-                'opentrons_24_tuberack_nest_2ml_snapcap', '4')
+                'opentrons_24_tuberack_nest_2ml_snapcap',
+                '4')
             liquid_waste = ctx.load_labware(
-                'nest_12_reservoir_15ml', '5').wells()[waste_position]
+                'nest_12_reservoir_15ml',
+                '5').wells()[waste_position]
         else:
             reagent_container = ctx.load_labware(
-                'nest_12_reservoir_15ml', '4')
+                'nest_12_reservoir_15ml',
+                '4')
             liquid_waste = reagent_container.wells()[waste_position]
         samples = [well for well in mag_plate.wells()[:sample_number]]
         output = [well for well in output_plate.wells()[:sample_number]]
     else:
         # multi-channel pipet
         reagent_container = ctx.load_labware(
-            'nest_12_reservoir_15ml', '4')
+            'nest_12_reservoir_15ml',
+            '4')
         liquid_waste = reagent_container.wells()[waste_position]
         col_num = math.ceil(sample_number/8)
         samples = [col for col in mag_plate.rows()[0][:col_num]]
@@ -234,8 +239,7 @@ def run(ctx):
         mix_vol = elution_buffer_volume/2
     for target in samples:
         pipette.pick_up_tip()
-        pipette.transfer(
-            elution_buffer_volume, elution_buffer, target, new_tip='never')
+        pipette.transfer(elution_buffer_volume, elution_buffer, target, new_tip='never')
         pipette.mix(20, mix_vol, target)
         pipette.drop_tip()
 
