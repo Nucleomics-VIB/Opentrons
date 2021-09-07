@@ -24,7 +24,7 @@ import math
 
 
 metadata = {
-    'protocolName': 'DNA Bead Cleanup',
+    'protocolName': 'NC_DNA_bead_cleanup',
     'description': 'using multichannel m300 for speedup',
     'author': 'Opentrons <protocols@opentrons.com> \
         NucleomicsCore <nucleomics@vib.be>',
@@ -256,9 +256,9 @@ def run(ctx):
         pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
 
     ctx.comment('''
-      ##########################################################
-      ## All done!                                            ##
-      ## the PCR strip(s) tubes (#2) now contain purified DNA ##
-      ## make sure to label them!                             ##
-      ##########################################################
-      ''')
+    ##########################################################
+    ## All done!                                            ##
+    ## the PCR strip(s) tubes (#2) now contain purified DNA ##
+    ## make sure to label them!                             ##
+    ##########################################################
+    ''')
