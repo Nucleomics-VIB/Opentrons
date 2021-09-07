@@ -170,8 +170,7 @@ def run(ctx):
         make sure you have placed enough labelled PCR strips
         on the Alu-block (position #2) to receive the purified DNA
         select "Resume" in the Opentrons App.
-        '''
-        )
+        ''')
 
     ctx.comment('''
     #####################
