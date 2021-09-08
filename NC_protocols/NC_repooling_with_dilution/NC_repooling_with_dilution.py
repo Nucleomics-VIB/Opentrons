@@ -1,4 +1,4 @@
-from opentrons import protocol_api, types
+from opentrons import protocol_api
 
 metadata = {
         'protocolName': 'NC_repooling_with_dilution',
@@ -13,21 +13,21 @@ metadata = {
 
 
 def get_values(*names):
-        import json
-        _all_values = json.loads("""{
-            "uploaded_csv":"source_plate,source_well,source_volume,dil_factor\\n4,A1,2.5,1\\n1,A8,5,1\\n4,B4,2.5,10\\n4,F6,2.5,80\\n4,H8,20,50",
-            "min_vol":"2.5",
-            "sp_type":"biorad_96_wellplate_200ul_pcr",
-            "dp_type":"biorad_96_wellplate_200ul_pcr"
-        }""")
-        return [_all_values[n] for n in names]
+    import json
+    _all_values = json.loads("""{
+        "uploaded_csv":"source_plate,source_well,source_volume,dil_factor\\n4,A1,2.5,1\\n1,A8,5,1\\n4,B4,2.5,10\\n4,F6,2.5,80\\n4,H8,20,50",
+        "min_vol":"2.5",
+        "sp_type":"biorad_96_wellplate_200ul_pcr",
+        "dp_type":"biorad_96_wellplate_200ul_pcr"
+    }""")
+    return [_all_values[n] for n in names]
 
 
 def run(ctx: protocol_api.ProtocolContext):
     [uploaded_csv,
-    min_vol,
-    sp_type,
-    dp_type] = get_values(    # noqa: F821
+        min_vol,
+        sp_type,
+        dp_type] = get_values(    # noqa: F821
         'uploaded_csv',
         'min_vol',
         'sp_type',
@@ -49,7 +49,7 @@ def run(ctx: protocol_api.ProtocolContext):
         'opentrons_24_tuberack_nest_1.5ml_snapcap',
         '1')
 
-    # water in first rack tubes (1ml per tube)
+    # water in all 6 first row rack tubes (1ml per tube)
     water_tubes = tube_rack.rows_by_name()['A']
     global water_counter, wt_idx
     water_counter = 1000
@@ -229,7 +229,7 @@ def run(ctx: protocol_api.ProtocolContext):
         if d_fact > 1:
             # max dilution is 80x due to well size
             if d_fact > max_dil_fact:
-                    d_fact = max_dil_fact
+                d_fact = max_dil_fact
             # set s_vol to min_vol if larger
             if s_vol > min_vol:
                 s_vol = min_vol
