@@ -59,7 +59,6 @@ def get_values(*names):
 
 
 def run(ctx):
-
     [mag_mod,
     pipette_type,
     pipette_mount,
@@ -92,7 +91,7 @@ def run(ctx):
         "incubation_time",
         "capture_time",
         "drying_time"
-    )
+        )
 
     mag_deck = ctx.load_module(
         mag_mod,
@@ -114,13 +113,12 @@ def run(ctx):
         tip_name = 'opentrons_96_filtertiprack_200ul'
     else:
         tip_name = 'opentrons_96_filtertiprack_20ul'
-    tipracks = [
-        ctx.load_labware(tip_name, slot)
-        for slot in slots
-    ]
+    tipracks = [ctx.load_labware(tip_name, slot) for slot in slots]
 
     pipette = ctx.load_instrument(
-        pipette_type, pipette_mount, tip_racks=tipracks)
+        pipette_type,
+        pipette_mount,
+        tip_racks=tipracks)
 
     mode = pipette_type.split('_')[1]
 
@@ -163,6 +161,7 @@ def run(ctx):
         mix_vol = pipette.max_volume
     else:
         mix_vol = bead_volume/2
+
     total_vol = bead_volume + sample_volume + 5
 
     ctx.pause(
@@ -180,9 +179,19 @@ def run(ctx):
 
     for target in samples:
         pipette.pick_up_tip()
-        pipette.mix(5, mix_vol, beads)
-        pipette.transfer(bead_volume, beads, target, new_tip='never')
-        pipette.mix(10, mix_vol, target)
+        pipette.mix(
+            5,
+            mix_vol,
+            beads)
+        pipette.transfer(
+            bead_volume,
+            beads,
+            target,
+            new_tip='never')
+        pipette.mix(
+            10,
+            mix_vol,
+            target)
         pipette.blow_out()
         pipette.drop_tip()
 
@@ -202,7 +211,11 @@ def run(ctx):
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 150
     for target in samples:
-        pipette.transfer(total_vol, target, liquid_waste, blow_out=True)
+        pipette.transfer(
+            total_vol,
+            target,
+            liquid_waste,
+            blow_out=True)
 
     ctx.comment('''
     ######################################
@@ -214,11 +227,19 @@ def run(ctx):
     air_vol = pipette.max_volume * 0.1
     for cycle in range(2):
         for target in samples:
-            pipette.transfer(200, ethanol, target, air_gap=air_vol,
-                             new_tip='once')
+            pipette.transfer(
+                200,
+                ethanol,
+                target,
+                air_gap=air_vol,
+                new_tip='once')
         ctx.delay(minutes=1)
         for target in samples:
-            pipette.transfer(200, target, liquid_waste, air_gap=air_vol)
+            pipette.transfer(
+                200,
+                target,
+                liquid_waste,
+                air_gap=air_vol)
 
     # Dry at RT
     ctx.delay(minutes=drying_time)
@@ -238,8 +259,15 @@ def run(ctx):
         mix_vol = elution_buffer_volume/2
     for target in samples:
         pipette.pick_up_tip()
-        pipette.transfer(elution_buffer_volume, elution_buffer, target, new_tip='never')
-        pipette.mix(20, mix_vol, target)
+        pipette.transfer(
+            elution_buffer_volume,
+            elution_buffer,
+            target,
+            new_tip='never')
+        pipette.mix(
+            20,
+            mix_vol,
+            target)
         pipette.drop_tip()
 
     # Incubate at RT
@@ -256,7 +284,11 @@ def run(ctx):
     ''')
 
     for target, dest in zip(samples, output):
-        pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
+        pipette.transfer(
+            elution_buffer_volume,
+            target,
+            dest,
+            blow_out=True)
 
     ctx.comment('''
     ##########################################################
