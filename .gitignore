@@ -10,3 +10,4 @@ FromLibrary/*
 atWork/*
 github_templates/*
 Final\ protocols/*
+**/__pycache__
