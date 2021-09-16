@@ -16,8 +16,8 @@
         "label": "pipette mount",
         "name": "pipette_mount",
         "options": [
-        { "label": "left", value: "left" },
-        { "label": "right", value: "right" }
+        { "label": "left", "value": "left" },
+        { "label": "right", "value": "right" }
         ]
     },
     {
