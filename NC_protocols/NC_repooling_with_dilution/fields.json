@@ -1,0 +1,26 @@
+[
+    {
+        "type": "textFile",
+        "label": "CSV file",
+        "name": "uploaded_csv",
+        "default": "source_plate,source_well,source_volume,dil_factor\\n1,A1,2.5,1\\n1,A8,5,1\\n2,B4,2.5,10\\n3,F6,2.5,80\\n4,H8,20,50"
+    },
+    {
+        "type": "float",
+        "label": "minimum volume",
+        "name": "min_vol",
+        "default": 2.5
+    },
+    {
+        "type": "str",
+        "label": "source plate type",
+        "name": "sp_type",
+        "default": "biorad_96_wellplate_200ul_pcr"
+    },
+    {
+        "type": "str",
+        "label": "dilution plate type",
+        "name": "dp_type",
+        "default": "biorad_96_wellplate_200ul_pcr"
+    }
+]

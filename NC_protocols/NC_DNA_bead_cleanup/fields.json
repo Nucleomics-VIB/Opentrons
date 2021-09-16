@@ -1,0 +1,106 @@
+[
+    {
+        "type": "str",
+        "label": "magnetic module",
+        "name": "mag_mod",
+        "default": "magnetic module gen2"
+    },
+    {
+        "type": "str",
+        "label": "pipette type",
+        "name": "pipette_type",
+        "default": "p300_multi_gen2"
+    },
+    {
+        "type": "dropDown",
+        "label": "pipette mount",
+        "name": "pipette_mount",
+        "options": [
+        { "label": "left", value: "left" },
+        { "label": "right", value: "right" }
+        ]
+    },
+    {
+        "type": "str",
+        "label": "input plate type",
+        "name": "input_plate_type",
+        "default": "biorad_96_wellplate_200ul_pcr"
+    },
+    {
+        "type": "dropDown",
+        "label": "output Plate type",
+        "name": "output_plate_type",
+        "options": [
+        { "label": "biorad_96_wellplate_200ul_pcr",
+          "value": "biorad_96_wellplate_200ul_pcr" },
+        { "label": "opentrons_96_aluminumblock_generic_pcr_strip_200ul",
+          "value": "opentrons_96_aluminumblock_generic_pcr_strip_200ul" }
+        ]
+    },
+    {
+        "type": "int",
+        "label": "number of samples",
+        "name": "sample_number",
+        "default": 8
+    },
+    {
+        "type": "float",
+        "label": "samples volume",
+        "name": "sample_volume",
+        "default": 20
+    },
+    {
+        "type": "float",
+        "label": "bead ratio",
+        "name": "bead_ratio",
+        "default": 1.8
+    },
+    {
+        "type": "int",
+        "label": "bead reservoir well",
+        "name": "beads_position",
+        "default": 0
+    },
+    {
+        "type": "int",
+        "label": "ethanol reservoir well",
+        "name": "ethanol_position",
+        "default": 1
+    },
+    {
+        "type": "int",
+        "label": "elution buffer reservoir well",
+        "name": "elution_buffer_position",
+        "default": 2
+    },
+    {
+        "type": "int",
+        "label": "waste reservoir well",
+        "name": "waste_position",
+        "default": -1
+    },
+    {
+        "type": "float",
+        "label": "elution buffer volume",
+        "name": "elution_buffer_volume",
+        "default": 50
+    },
+    {
+        "type": "float",
+        "label": "incubation time (min)",
+        "name": "incubation_time",
+        "default": 1.0
+    },
+    {
+        "type": "float",
+        "label": "capture time (min)",
+        "name": "capture_time",
+        "default": 2.0
+    },
+    {
+        "type": "float",
+        "label": "drying time (min)",
+        "name": "drying_time",
+        "default": 5.0
+    }
+]

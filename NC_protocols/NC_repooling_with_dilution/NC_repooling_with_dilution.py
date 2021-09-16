@@ -9,17 +9,17 @@ metadata = {
         'apiLevel': '2.10'
         }
 
-# script version 1.1; 2021_09_07 (SP)
+# script version 1.2; 2021_09_16 (SP)
 
 
 def get_values(*names):
     import json
     _all_values = json.loads("""{
-        "uploaded_csv":"source_plate,source_well,source_volume,dil_factor\\n4,A1,2.5,1\\n1,A8,5,1\\n4,B4,2.5,10\\n4,F6,2.5,80\\n4,H8,20,50",
+        "uploaded_csv":"source_plate,source_well,source_volume,dil_factor\\n1,A1,2.5,1\\n1,A8,5,1\\n2,B4,2.5,10\\n3,F6,2.5,80\\n4,H8,20,50",
         "min_vol":"2.5",
         "sp_type":"biorad_96_wellplate_200ul_pcr",
         "dp_type":"biorad_96_wellplate_200ul_pcr"
-    }""")
+        }""")
     return [_all_values[n] for n in names]
 
 
@@ -239,9 +239,9 @@ def run(ctx: protocol_api.ProtocolContext):
         else:
             add_to_pool(s_pl, s_well, s_vol, d_fact)
 
-    ctx.comment(
-        '\n' +
-        '\n###########################################################' +
-        '\n## All done!                                             ##' +
-        '\n## the new Pool is ready in the tube rack last position  ##' +
-        '\n###########################################################')
+    ctx.comment('''
+    ###########################################################
+    # All done!                                              ##
+    ## the new Pool is ready in the tube rack last position  ##
+    ###########################################################
+    ''')

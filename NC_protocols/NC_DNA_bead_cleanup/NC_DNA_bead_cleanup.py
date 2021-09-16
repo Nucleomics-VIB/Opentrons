@@ -32,7 +32,7 @@ metadata = {
     'apiLevel': '2.10'
     }
 
-# version 1.0 SP@NC 2021/08/25
+# version 1.1 SP@NC 2021/09/16
 
 
 def get_values(*names):
@@ -59,6 +59,7 @@ def get_values(*names):
 
 
 def run(ctx):
+
     [mag_mod,
     pipette_type,
     pipette_mount,
@@ -91,11 +92,10 @@ def run(ctx):
         "incubation_time",
         "capture_time",
         "drying_time"
-        )
+    )
 
-    mag_deck = ctx.load_module(
-        mag_mod,
-        '1')
+    mag_deck = ctx.load_module(mag_mod,
+                               '1')
     mag_plate = mag_deck.load_labware(
         input_plate_type,
         'input plate')
@@ -113,12 +113,13 @@ def run(ctx):
         tip_name = 'opentrons_96_filtertiprack_200ul'
     else:
         tip_name = 'opentrons_96_filtertiprack_20ul'
-    tipracks = [ctx.load_labware(tip_name, slot) for slot in slots]
+    tipracks = [
+        ctx.load_labware(tip_name, slot)
+        for slot in slots
+    ]
 
     pipette = ctx.load_instrument(
-        pipette_type,
-        pipette_mount,
-        tip_racks=tipracks)
+        pipette_type, pipette_mount, tip_racks=tipracks)
 
     mode = pipette_type.split('_')[1]
 
@@ -126,23 +127,19 @@ def run(ctx):
         # single channel pipet
         if sample_number <= 5:
             reagent_container = ctx.load_labware(
-                'opentrons_24_tuberack_nest_2ml_snapcap',
-                '4')
+                'opentrons_24_tuberack_nest_2ml_snapcap', '4')
             liquid_waste = ctx.load_labware(
-                'nest_12_reservoir_15ml',
-                '5').wells()[waste_position]
+                'nest_12_reservoir_15ml', '5').wells()[waste_position]
         else:
             reagent_container = ctx.load_labware(
-                'nest_12_reservoir_15ml',
-                '4')
+                'nest_12_reservoir_15ml', '4')
             liquid_waste = reagent_container.wells()[waste_position]
         samples = [well for well in mag_plate.wells()[:sample_number]]
         output = [well for well in output_plate.wells()[:sample_number]]
     else:
         # multi-channel pipet
         reagent_container = ctx.load_labware(
-            'nest_12_reservoir_15ml',
-            '4')
+            'nest_12_reservoir_15ml', '4')
         liquid_waste = reagent_container.wells()[waste_position]
         col_num = math.ceil(sample_number/8)
         samples = [col for col in mag_plate.rows()[0][:col_num]]
@@ -161,7 +158,6 @@ def run(ctx):
         mix_vol = pipette.max_volume
     else:
         mix_vol = bead_volume/2
-
     total_vol = bead_volume + sample_volume + 5
 
     ctx.pause(
@@ -169,7 +165,8 @@ def run(ctx):
         make sure you have placed enough labelled PCR strips
         on the Alu-block (position #2) to receive the purified DNA
         select "Resume" in the Opentrons App.
-        ''')
+        '''
+        )
 
     ctx.comment('''
     #####################
@@ -179,19 +176,9 @@ def run(ctx):
 
     for target in samples:
         pipette.pick_up_tip()
-        pipette.mix(
-            5,
-            mix_vol,
-            beads)
-        pipette.transfer(
-            bead_volume,
-            beads,
-            target,
-            new_tip='never')
-        pipette.mix(
-            10,
-            mix_vol,
-            target)
+        pipette.mix(5, mix_vol, beads)
+        pipette.transfer(bead_volume, beads, target, new_tip='never')
+        pipette.mix(10, mix_vol, target)
         pipette.blow_out()
         pipette.drop_tip()
 
@@ -211,11 +198,7 @@ def run(ctx):
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 150
     for target in samples:
-        pipette.transfer(
-            total_vol,
-            target,
-            liquid_waste,
-            blow_out=True)
+        pipette.transfer(total_vol, target, liquid_waste, blow_out=True)
 
     ctx.comment('''
     ######################################
@@ -228,19 +211,11 @@ def run(ctx):
     # pipette.max_volume * 0.1
     for cycle in range(2):
         for target in samples:
-            pipette.transfer(
-                190,
-                ethanol,
-                target,
-                air_gap=air_vol,
-                new_tip='once')
+            pipette.transfer(190, ethanol, target, air_gap=air_vol,
+                             new_tip='once')
         ctx.delay(minutes=1)
         for target in samples:
-            pipette.transfer(
-                190,
-                target,
-                liquid_waste,
-                air_gap=air_vol)
+            pipette.transfer(190, target, liquid_waste, air_gap=air_vol)
 
     # Dry at RT
     ctx.delay(minutes=drying_time)
@@ -261,14 +236,8 @@ def run(ctx):
     for target in samples:
         pipette.pick_up_tip()
         pipette.transfer(
-            elution_buffer_volume,
-            elution_buffer,
-            target,
-            new_tip='never')
-        pipette.mix(
-            20,
-            mix_vol,
-            target)
+            elution_buffer_volume, elution_buffer, target, new_tip='never')
+        pipette.mix(20, mix_vol, target)
         pipette.drop_tip()
 
     # Incubate at RT
@@ -285,11 +254,7 @@ def run(ctx):
     ''')
 
     for target, dest in zip(samples, output):
-        pipette.transfer(
-            elution_buffer_volume,
-            target,
-            dest,
-            blow_out=True)
+        pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
 
     ctx.comment('''
     ##########################################################
