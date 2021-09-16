@@ -121,7 +121,7 @@ def run(ctx):
     ctx.set_rail_lights(True)
 
     # globally change instrument values
-    magnet_height = 11
+    magnet_height = 10
 
     # globally change magnetic capture duration (1 for testing)
     capture_duration = 1
@@ -333,7 +333,7 @@ def run(ctx):
         m20.pick_up_tip()
         remove_supernatant_uni(
             vol=10,
-            iondex=i,
+            index=i,
             loc=col,
             trash=True,
             delta_asp_height=-0.5,
