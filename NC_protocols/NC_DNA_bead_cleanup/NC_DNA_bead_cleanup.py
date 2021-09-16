@@ -224,11 +224,12 @@ def run(ctx):
     ######################################
     ''')
 
-    air_vol = pipette.max_volume * 0.1
+    air_vol = 10
+    # pipette.max_volume * 0.1
     for cycle in range(2):
         for target in samples:
             pipette.transfer(
-                200,
+                190,
                 ethanol,
                 target,
                 air_gap=air_vol,
@@ -236,7 +237,7 @@ def run(ctx):
         ctx.delay(minutes=1)
         for target in samples:
             pipette.transfer(
-                200,
+                190,
                 target,
                 liquid_waste,
                 air_gap=air_vol)
