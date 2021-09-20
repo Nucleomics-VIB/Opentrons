@@ -12,3 +12,4 @@ github_templates/*
 Final\ protocols/*
 **/__pycache__
 NC_server/OT2Scripts/OT2inject_data/*
+NC_server/OT2MakeProtocol/OT2inject_data/*
