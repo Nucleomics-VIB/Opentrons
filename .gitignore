@@ -11,3 +11,6 @@ atWork/*
 github_templates/*
 Final\ protocols/*
 **/__pycache__
+NC_server/OT2Scripts/OT2inject_data/NC_repooling_with_dilution_template.py
+NC_server/OT2Scripts/OT2inject_data/data.csv
+NC_server/OT2Scripts/OT2inject_data/config.yaml
