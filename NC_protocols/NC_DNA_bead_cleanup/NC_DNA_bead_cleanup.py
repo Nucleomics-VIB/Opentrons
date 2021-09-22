@@ -32,7 +32,7 @@ metadata = {
     'apiLevel': '2.10'
     }
 
-# version 1.1 SP@NC 2021/09/16
+# version 1.1 SP@NC 2021/09/22
 
 
 def get_values(*names):
@@ -59,6 +59,9 @@ def get_values(*names):
 
 
 def run(ctx):
+
+    # create reference for functions
+    jakadi = ctx
 
     [mag_mod,
     pipette_type,
@@ -95,7 +98,7 @@ def run(ctx):
     )
 
     mag_deck = ctx.load_module(mag_mod,
-                               '1')
+        '1')
     mag_plate = mag_deck.load_labware(
         input_plate_type,
         'input plate')
@@ -106,6 +109,7 @@ def run(ctx):
 
     total_tips = sample_number*8
     tiprack_num = math.ceil(total_tips/96)
+    # reserve enough tips boxes for all samples
     slots = ['3', '5', '6', '7', '8', '9', '10', '11'][:tiprack_num]
 
     pip_range = pipette_type.split('_')[0]
@@ -139,7 +143,8 @@ def run(ctx):
     else:
         # multi-channel pipet
         reagent_container = ctx.load_labware(
-            'nest_12_reservoir_15ml', '4')
+            'nest_12_reservoir_15ml',
+            '4')
         liquid_waste = reagent_container.wells()[waste_position]
         col_num = math.ceil(sample_number/8)
         samples = [col for col in mag_plate.rows()[0][:col_num]]
@@ -160,6 +165,32 @@ def run(ctx):
         mix_vol = bead_volume/2
     total_vol = bead_volume + sample_volume + 5
 
+
+    ############# custom functions #############
+    def set_speeds(pip, aspeed, dspeed=None, bspeed=None):
+        pip.flow_rate.aspirate = aspeed
+        pip.flow_rate.dispense = dspeed if dspeed is not None else aspeed
+        pip.flow_rate.blow_out = bspeed if bspeed is not None else aspeed
+
+    def reset_speeds(pip):
+        # req: jakadi reference created on top of the code
+        pip.flow_rate.set_defaults(jakadi.api_version)
+
+    def xcomment(text):
+        # req: jakadi reference created on top of the code
+        import io
+        width=len(max(io.StringIO(text), key=len).rstrip())+6
+        jakadi.comment('\n' + '#'*width)
+        for line in io.StringIO(text):
+            if not line.isspace():  # omit empty lines
+            jakadi.comment('#'*3 + line.rstrip())  # remove trailing spaces and line feeds
+        jakadi.comment('#'*width + '\n')  # leave one empty line below
+
+    def xpause(text):
+        xcomment(text)
+        protocol.pause("==> press continue when ready!")
+    ############# custom functions #############
+
     ctx.pause(
         '''
         make sure you have placed enough labelled PCR strips
@@ -177,7 +208,7 @@ def run(ctx):
     for target in samples:
         pipette.pick_up_tip()
         pipette.mix(5, mix_vol, beads)
-        pipette.transfer(bead_volume, beads, target, new_tip='never')
+        pipette.transfer(bead_volume, beads, target, new_tip='always')
         pipette.mix(10, mix_vol, target)
         pipette.blow_out()
         pipette.drop_tip()
@@ -195,10 +226,17 @@ def run(ctx):
     ############################
     ''')
 
-    pipette.flow_rate.aspirate = 25
-    pipette.flow_rate.dispense = 150
+    set_speeds(pipette, 25, 150)
+
     for target in samples:
-        pipette.transfer(total_vol, target, liquid_waste, blow_out=True)
+        pipette.transfer(
+            total_vol,
+            target,
+            liquid_waste,
+            new_tip='always',
+            blow_out=True)
+
+    reset_speeds(pipette)
 
     ctx.comment('''
     ######################################
@@ -210,12 +248,24 @@ def run(ctx):
     air_vol = 10
     # pipette.max_volume * 0.1
     for cycle in range(2):
+        # add EtOH to beads pellet
         for target in samples:
-            pipette.transfer(190, ethanol, target, air_gap=air_vol,
-                             new_tip='once')
+            pipette.transfer(
+                190,
+                ethanol,
+                target,
+                air_gap=air_vol,
+                new_tip='always')
+        # apply for 1 extra min (last wells)
         ctx.delay(minutes=1)
+        # remove EtOH
         for target in samples:
-            pipette.transfer(190, target, liquid_waste, air_gap=air_vol)
+            pipette.transfer(
+                190,
+                target,
+                liquid_waste,
+                air_gap=air_vol,
+                new_tip='always')
 
     # Dry at RT
     ctx.delay(minutes=drying_time)
@@ -233,10 +283,14 @@ def run(ctx):
         mix_vol = pipette.max_volume
     else:
         mix_vol = elution_buffer_volume/2
+
     for target in samples:
         pipette.pick_up_tip()
         pipette.transfer(
-            elution_buffer_volume, elution_buffer, target, new_tip='never')
+            elution_buffer_volume,
+            elution_buffer,
+            target,
+            new_tip='never')
         pipette.mix(20, mix_vol, target)
         pipette.drop_tip()
 
@@ -253,8 +307,14 @@ def run(ctx):
     #######################################################
     ''')
 
+    set_speeds(pipette, 25, 150)
     for target, dest in zip(samples, output):
-        pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
+        pipette.transfer(
+            elution_buffer_volume,
+            target,
+            dest,
+            new_tip='always',
+            blow_out=True)
 
     ctx.comment('''
     ##########################################################
