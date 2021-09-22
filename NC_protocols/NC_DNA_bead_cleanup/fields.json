@@ -1,12 +1,6 @@
 [
     {
         "type": "str",
-        "label": "magnetic module",
-        "name": "mag_mod",
-        "default": "magnetic module gen2"
-    },
-    {
-        "type": "str",
         "label": "pipette type",
         "name": "pipette_type",
         "default": "p300_multi_gen2"

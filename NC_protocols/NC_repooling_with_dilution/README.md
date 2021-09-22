@@ -1,9 +1,7 @@
-# NC DNA magnetic bead cleanup
-version 1.0; 2021_09_22
+# NC repooling with dilution
 
 ### Authors
 [VIB Nucleomics Core](https://www.nucleomics.be)
-
 
 ## Categories
 * DNA method
@@ -29,19 +27,15 @@ Samples should be present in the leftmost columns of the plate.
 ---
 ## Setup
 
-Place the PCR plate with DNA samples on the magnetic module in position #1
+Place the PCR plate with DNA samples in position #1
 Place the aluminum block with enough 200uL PCR strips in position #2
 
-### reservoir layout (position #4):
+### reservoir layout:
 * col1: magnetic beads (AMPure XP; 500uL dead volume + enough for all samples)
 * col2: 70% Ethanol (500uL dead volume + enough for all samples)
 * col3: elution buffer (Tris 1mM, pH9 or water; 500uL dead volume + enough for all samples)
 * col4-col11: empty
 * col12: waste
-
-### Tips:
-* One tip rack is enough for 12 samples
-* Place enough filter-tip racks in slots ['3', '5', '6', '7', '8', '9', '10', '11'] in that order
 
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
