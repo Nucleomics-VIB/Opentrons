@@ -4,4 +4,4 @@
 
 A bash script with some php wrappers to take a protocol template and a yaml file defining the protocol variables (+ accessorily a CVS file with user data) and combining them into a ready to run Opentron-2 protocol
 
-<img src="<img src="https://raw.githubusercontent.com/Nucleomics-VIB/Opentrons/main/pictures/OT2MakeProtocol.png" width=600px>
+<img src="<img src="https://raw.githubusercontent.com/Nucleomics-VIB/Opentrons/main/pictures/OT2MakeProtocol.png" width=900px>
