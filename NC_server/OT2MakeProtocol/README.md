@@ -2,7 +2,7 @@
 
 # OT2MakeProtocol
 
-A standalone bash script to take a protocol template and a yaml file defining the protocol variables (+ accessorily a CVS file with user data) and combining them into a ready to run Opentron-2 protocol
+A standalone bash **script OT_inject_params.sh** takes a protocol template and a yaml file defining the protocol variables (+ accessorily a CVS file with user data) and combines them into a ready to run Opentron-2 protocol.
 
 A test dataset is provided as a zip archive to check the functionality of the code.
 
