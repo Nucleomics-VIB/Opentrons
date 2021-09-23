@@ -49,6 +49,9 @@ def run(ctx: protocol_api.ProtocolContext):
         'opentrons_24_tuberack_nest_1.5ml_snapcap',
         '1')
 
+    # turn lights ON (comment out to turn OFF)
+    ctx.set_rail_lights(True)
+
     # water in all 6 first row rack tubes (1ml per tube)
     water_tubes = tube_rack.rows_by_name()['A']
     global water_counter, wt_idx
@@ -204,8 +207,21 @@ def run(ctx: protocol_api.ProtocolContext):
             blowout_location='destination well',
             new_tip='never'
             )
-
         pipette.drop_tip()
+
+    ############################
+    # fill pool tube 50 uL Tris
+    ############################
+
+    pipette.pick_up_tip()
+    pipette.transfer(
+        50,
+        water_tubes[wt_idx],
+        pool_tube,
+        new_tip='never'
+        )
+    pipette.drop_tip()
+    water_counter -= 50
 
     ###################
     # process csv data

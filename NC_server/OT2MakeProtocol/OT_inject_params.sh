@@ -80,7 +80,7 @@ function inject_params() {
 for PARAM in "${PARAMS[@]}";
 do
   # sed -i should be followed by '' under OSX
-  if [[ "$OSTYPE" =~ ^Darwin* ]]; then
+  if [[ "$OSTYPE" =~ ^[dD]arwin* ]]; then
     sed -i '' "s/<${PARAM}>/${!PARAM}/" "${PROTOCOL}"
   else
     sed -i "s/<${PARAM}>/${!PARAM}/" "${PROTOCOL}"
@@ -91,7 +91,7 @@ done
 function inject_edit_date() {
 # inject edit_version at placeholder
 # sed -i should be followed by '' under OSX
-if [[ "$OSTYPE" =~ ^Darwin* ]]; then
+if [[ "$OSTYPE" =~ ^[dD]arwin* ]]; then
   sed -i '' "s/<edit_date>/${datetag}/" "${PROTOCOL}"
 else
   sed -i "s/<edit_date>/${datetag}/" "${PROTOCOL}"
@@ -113,12 +113,16 @@ function get_csv_filename() {
 yq eval '.csv' "$1" | sed 's/.*: //g'
 }
 
+function parse_csv() {
+cat "${1}" | tr -d '\r' | perl -0p -e "s/\R*\z//g" | perl -p -e 's/\n/\\\\n/'
+}
+
 function print_csv() {
 # $1 is ${YAML}
 # print out CSV data
 CSVPLACEHOLDER=$(get_csv_placeholder "$1")
 CSVFILENAME=$(get_csv_filename "$1" | sed 's/\"//g')
-CSVDATA=$(sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\\\n/g' "${CSVFILENAME}")
+CSVDATA=$(parse_csv "${CSVFILENAME}")
 echo "# ${CSVPLACEHOLDER} has content: ${CSVDATA}"
 }
 
@@ -127,12 +131,12 @@ function inject_csv() {
 # inject CSV data at placeholder
 CSVPLACEHOLDER=$(get_csv_placeholder "$1")
 CSVFILENAME=$(get_csv_filename "$1" | sed 's/\"//g')
-CSVDATA=$(sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\\\n/g' "${CSVFILENAME}")
+CSVDATA=$(parse_csv "${CSVFILENAME}")
 # sed -i should be followed by '' under OSX
-if [[ "$OSTYPE" =~ ^Darwin* ]]; then
-  sed -i '' "s/<${CSVPLACEHOLDER}>/${CSVDATA}/" "${PROTOCOL}"
+if [[ "$OSTYPE" =~ ^[dD]arwin* ]]; then
+  sed -i '' "s/<${CSVPLACEHOLDER}>/$(echo ${CSVDATA} | sed -e 's/\\/\\\\/'g)/" "${PROTOCOL}"
 else
-  sed -i "s/<${CSVPLACEHOLDER}>/${CSVDATA}/" "${PROTOCOL}"
+  sed -i "s/<${CSVPLACEHOLDER}>/$(echo ${CSVDATA} | sed -e 's/\\/\\\\/'g)/" "${PROTOCOL}"
 fi
 }
 

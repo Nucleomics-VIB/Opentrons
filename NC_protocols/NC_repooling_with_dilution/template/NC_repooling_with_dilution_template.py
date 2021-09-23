@@ -12,6 +12,7 @@ metadata = {
 # template version 1.2; 2021_09_16 (SP)
 # edit date <edit_date>
 
+
 def get_values(*names):
     import json
     _all_values = json.loads("""{
@@ -206,6 +207,20 @@ def run(ctx: protocol_api.ProtocolContext):
             )
 
         pipette.drop_tip()
+
+    ############################
+    # fill pool tube 50 uL Tris
+    ############################
+
+    pipette.pick_up_tip()
+    pipette.transfer(
+        50,
+        water_tubes[wt_idx],
+        pool_tube,
+        new_tip='never'
+        )
+    pipette.drop_tip()
+    water_counter -= 50
 
     ###################
     # process csv data
