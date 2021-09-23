@@ -1,5 +1,6 @@
 import math
 
+# uses the multichannel m300
 # Sample number: Customize the number of samples to run per protocol.
 # A multiple of 8 is recommended when you are using a multichannel pipette.
 # Sample volume: Specify the starting volume (in uL) of the input sample.
@@ -23,7 +24,7 @@ import math
 
 metadata = {
     'protocolName': 'NC_DNA_bead_cleanup',
-    'description': 'using multichannel m300 for speedup',
+    'description': 'magnetic bead cleanup using multichannel m300 for speedup',
     'author': 'Opentrons <protocols@opentrons.com>, \
         NucleomicsCore <nucleomics@vib.be>',
     'source': 'NC Protocol Library',
@@ -37,7 +38,6 @@ metadata = {
 def get_values(*names):
     import json
     _all_values = json.loads("""{
-        "pipette_type":"p300_multi_gen2",
         "pipette_mount":"right",
         "input_plate_type":"biorad_96_wellplate_200ul_pcr",
         "output_plate_type":"opentrons_96_aluminumblock_generic_pcr_strip_200ul",
@@ -76,7 +76,6 @@ def run(ctx):
         incubation_time,
         capture_time,
         drying_time] = get_values(  # noqa: F821
-        "pipette_type",
         "pipette_mount",
         "input_plate_type",
         "output_plate_type",

@@ -1,0 +1,15 @@
+params: 
+  pipette_mount: "right"
+  input_plate_type: "biorad_96_wellplate_200ul_pcr"
+  output_plate_type: "opentrons_96_aluminumblock_generic_pcr_strip_200ul"
+  sample_number: 1
+  sample_volume: 20
+  bead_ratio: 1.8
+  beads_position: 0
+  ethanol_position: 1
+  elution_buffer_position: 2
+  waste_position: -1
+  elution_buffer_volume: 50
+  incubation_time: 1
+  capture_time: 2
+  drying_time: 5
