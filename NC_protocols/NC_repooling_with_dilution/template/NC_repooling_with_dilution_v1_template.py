@@ -1,18 +1,16 @@
 from opentrons import protocol_api
-import math
-
 
 metadata = {
         'protocolName': 'NC_repooling_with_dilution',
         'author': 'nucleomics@vib.be',
         'description': 'Cherrypicking from 1..4 plates and CSV \
-            (+ optional intermediate dilution for concentrated samples)',
+            (+ intermediate dilution for concentrated samples)',
         'source': 'VIB Nucleomics',
         'apiLevel': '2.10'
         }
 
-# template version 2.0; 2021_09_24 (SP)
-# edit date 2021-09-24
+# template version 1.2; 2021_09_16 (SP)
+# edit date <edit_date>
 
 
 def get_values(*names):
@@ -36,29 +34,32 @@ def run(ctx: protocol_api.ProtocolContext):
         'sp_type',
         'dp_type')
 
-    # reference for custom functions
-    jakadi = ctx
+    # define tip racks and pipette
+    tips = [ctx.load_labware(
+        'opentrons_96_filtertiprack_20ul',
+        slot,
+        label='tip_20')
+            for slot in range(7, 9)]
+
+    pipette = ctx.load_instrument(
+        'p20_single_gen2',
+        'left',
+        tip_racks=tips)
 
     tube_rack = ctx.load_labware(
-        'opentrons_15_tuberack_falcon_15ml_conical',
+        'opentrons_24_tuberack_nest_1.5ml_snapcap',
         '1')
 
-    # tris in top-left 15ml tube
-    tris_tube = tube_rack.wells_by_name()['A1']
-    global tris_counter
-    tris_counter = 5000.0
-    # initial volume in pool tube
-    ini_tris = 50.0
+    # water in all 6 first row rack tubes (1ml per tube)
+    water_tubes = tube_rack.rows_by_name()['A']
+    global water_counter, wt_idx
+    water_counter = 1000
+    wt_idx = 0
 
-    # pool in bottom-right 15ml tube
-    pool_tube = tube_rack.wells_by_name()["C5"]
-    max_pool_vol = 8000.0    # to fit in one tube
+    # pool in last rack tube
+    pool_tube = tube_rack.wells_by_name()["D6"]
 
-    # reset type
-    min_vol = float(min_vol)
-
-    # must dilute in a 200uL well
-    max_dil_fact = 200.0/min_vol   # eg 200.0/2.5 = 80x
+    max_dil_fact = 80.0     # since 2.5x80=200uL
 
     dilution_plate = ctx.load_labware(
         dp_type,
@@ -76,58 +77,12 @@ def run(ctx: protocol_api.ProtocolContext):
     # do some testing on the user data
     ###################################
 
-    # provision enough tips
-    total_tips = len(data) + 1
-    tiprack_num = math.ceil(total_tips/96)
-    slots = ['7', '8', '9', '10', '11'][:tiprack_num]
-    tips = [ctx.load_labware(
-        'opentrons_96_filtertiprack_20ul',
-        slot,
-        label='tip_20')
-            for slot in slots]
-
-    # define pipette
-    pipette = ctx.load_instrument(
-        'p20_single_gen2',
-        'left',
-        tip_racks=tips)
-
-    # set speed for all pipette operations
-    pspeed = 10
-
-    # fail if too many samples to be diluted in csv
-    dilcnt = len([row[3] for row in data if (row[3] != '1')])
-    ctx.comment(
-        '## ' + str(dilcnt) +
-        ' of the ' + str(len(data)) +
-        ' samples will be diluted')
-
-    if dilcnt > 96:
+    # fail if too many samples in csv
+    if len(data) > 96:
         usrmsg = (
-            'max 96 samples can be diluted!' +
-            '(csv has ' + str(dilcnt) + ')')
+            'max 96 samples can be repooled!' +
+            '(csv has ' + str(len(data)) + ')')
         raise Exception(usrmsg)
-
-    # estimate volumes based on CSV data
-    trisdil = ini_tris + sum([
-        float(min_vol)*float(row[3]) for row in data if (row[3] != '1')
-        ])
-    dilsmplvol = sum([float(min_vol) for row in data if (row[3] != '1')])
-    nondilsmplvol = sum([float(row[2]) for row in data if (row[3] == '1')])
-
-    # inform about the volume of Tris needed
-    ctx.comment("## the run will use " + str(trisdil) + "uL Tris buffer")
-    ctx.pause("## check there is enough Tris in the tube on position #1:A1")
-
-    # fail if pool is too large
-    pool_vol = round(trisdil+dilsmplvol+nondilsmplvol, 1)
-    if pool_vol > max_pool_vol:
-        usrmsg = (
-            '## Pool estimated at ' + str(pool_vol) + 'uL)' +
-            '\n## the pool would be too large for the tube, stopping!')
-        raise Exception(usrmsg)
-
-    ctx.comment("## the pool will contain " + str(pool_vol) + "uL")
 
     # fail if too many samples plates (sp_number)
     plates = [int(row[0]) for row in data]
@@ -174,15 +129,6 @@ def run(ctx: protocol_api.ProtocolContext):
     # routines
     ###########
 
-    def set_speeds(pip, aspeed, dspeed=None, bspeed=None):
-        pip.flow_rate.aspirate = aspeed
-        pip.flow_rate.dispense = dspeed if dspeed is not None else aspeed
-        pip.flow_rate.blow_out = bspeed if bspeed is not None else aspeed
-
-    def reset_speeds(pip):
-        # req: jakadi reference created on top of the code
-        pip.flow_rate.set_defaults(jakadi.api_version)
-
     def dilute_and_pool(s_pl, s_well, s_vol, d_fact, dil_well):
 
         # pipet s_vol from dilution plate next_dil_well to pool
@@ -191,30 +137,33 @@ def run(ctx: protocol_api.ProtocolContext):
             str(s_pl) + " " + s_well + " " + str(d_fact) +
             ' times, and adding ' + str(s_vol) + 'ul to the pool')
 
-        # pipette.pick_up_tip()
+        pipette.pick_up_tip()
 
-        # add tris to dil_fact to dilution plate in well next_dil_well
-        tris_vol = (d_fact-1) * s_vol
+        # add water to dil_fact to dilution plate in well next_dil_well
+        water_vol = (d_fact-1) * s_vol
 
-        # enough for next dilution or increment tris tube index
-        global tris_counter
-        tris_counter -= tris_vol
+        # enough for next dilution or increment water tube index
+        global water_counter, wt_idx
+        water_counter -= water_vol
+        if water_counter < 0:
+            water_counter = 1000
+            wt_idx += 1
+        # TBD, check if the 6 water tubes have been used and ask a refill
 
         ctx.comment(
-            '\n' + '#'*2 + ' taking ' + str(tris_vol) +
-            'ul tris for dilution' +
+            '\n' + '#'*2 + ' taking ' + str(water_vol) +
+            'ul water from tube index: ' + str(wt_idx) +
             '\n')
 
-        # pipet tris_vol to dilution plate next_dil_well
         pipette.transfer(
-            tris_vol,
-            tris_tube,
+            water_vol,
+            water_tubes[wt_idx],
             dilution_plate.wells()[dil_well],
             new_tip='never'
             )
 
         # pipet s_vol to dilution plate next_dil_well and mix with at most 20ul
-        mix_vol = min(20, 0.8 * tris_vol)
+        mix_vol = min(20, 0.8 * water_vol)
         pltidx = s_pl-1
         pipette.transfer(
             s_vol,
@@ -244,11 +193,10 @@ def run(ctx: protocol_api.ProtocolContext):
             'ul from plate' + str(s_pl) + " " +
             s_well + ' to the pool')
 
-        # pipette.pick_up_tip()
+        pipette.pick_up_tip()
 
         # transfer s_vol (undiluted) to pool
         pltidx = s_pl-1
-        pipette.pick_up_tip()
         pipette.transfer(
             s_vol,
             source_list[pltidx][s_well],
@@ -257,33 +205,29 @@ def run(ctx: protocol_api.ProtocolContext):
             blowout_location='destination well',
             new_tip='never'
             )
-        pipette.drop_tip()
 
-    ############################
-    # PROTOCOL STARTS HERE
-    ############################
+        pipette.drop_tip()
 
     ############################
     # fill pool tube 50 uL Tris
     ############################
 
-    set_speeds(pipette, pspeed)
-
-    # prefill pool tube with ini_tris uL to receive small volumes
-    # keep tip for first sample
     pipette.pick_up_tip()
     pipette.transfer(
-        ini_tris,
-        tris_tube,
+        50,
+        water_tubes[wt_idx],
         pool_tube,
         new_tip='never'
         )
     pipette.drop_tip()
-    tris_counter -= ini_tris
+    water_counter -= 50
 
     ###################
     # process csv data
     ###################
+
+    # reset type
+    min_vol = float(min_vol)
 
     for line in data:
         s_pl, s_well, s_vol, d_fact = line[0:4]
@@ -310,9 +254,9 @@ def run(ctx: protocol_api.ProtocolContext):
         else:
             add_to_pool(s_pl, s_well, s_vol, d_fact)
 
-    ctx.comment(
-      "\n    #############################################" +
-      "\n    ## All done!" +
-      "\n    ## the pool in the tube rack (last position)" +
-      "\n    ## and contains " + str(pool_vol) + "uL"
-      "\n    #############################################")
+    ctx.comment('''
+    ###########################################################
+    # All done!                                              ##
+    ## the new Pool is ready in the tube rack last position  ##
+    ###########################################################
+    ''')
