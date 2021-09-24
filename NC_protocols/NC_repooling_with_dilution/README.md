@@ -35,8 +35,8 @@ This protocol takes samples from 96well plates and pools a given quantity (or di
 
 ---
 ## Process
-1. Attach the p20 singlechanel to the left mount and calibrate if not yet done.
-2. Download your protocol.
+1. Attach the p20 single-chanel to the left mount and calibrate if not yet done.
+2. Download your protocol or adapt it using the NC tool and your CSV file.
 3. Upload your protocol into the [OT App](https://opentrons.com/ot-app).
 4. Set up your deck according to the deck map.
 5. Calibrate your labware, tiprack and pipette using the OT App. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
