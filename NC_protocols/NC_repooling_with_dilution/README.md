@@ -16,7 +16,7 @@ This protocol takes samples from 96well plates and pools a given quantity (or di
 ## Materials
 
 * 5x [Bio-Rad 96 Well Plate 200 µL PCR (hsp9601)](https://labware.opentrons.com/biorad_96_wellplate_200ul_pcr?_gl=1*1a9qcug*_gcl_aw*R0NMLjE2MzE4MDAxNDUuQ2owS0NRanc4SWFHQmhDSEFSSXNBR0lSUllvamg1ZkhXczd1RUt2QTRLRE12cGE5WnBTbndpSmxybkxnVU54QTVJVEowRm04V2txTzhxTWFBbWxIRUFMd193Y0I.*_ga*MjA3NDg2NzQ1MC4xNjMwMDczMjAw*_ga_GNSMNLW4RY*MTYzMTc5OTI5Ny40My4xLjE2MzE4MDAyNTYuMA..)
-* [opentrons_15_tuberack_falcon_15ml_conical](https://labware.opentrons.com/opentrons_15_tuberack_falcon_15ml_conical?category=tubeRack)
+* [opentrons_15_tuberack_falcon_15ml_conical](https://labware.opentrons.com/opentrons_15_tuberack_falcon_15ml_conical?category=tubeRack) - 2x 15ml tubes needed
 * [P20 single-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
 * 5x [Opentrons 96 Filter Tip Rack 20 µL](https://labware.opentrons.com/opentrons_96_filtertiprack_20ul?category=tipRack)
 
