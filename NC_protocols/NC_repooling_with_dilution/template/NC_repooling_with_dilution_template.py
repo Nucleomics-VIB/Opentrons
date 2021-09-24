@@ -93,7 +93,7 @@ def run(ctx: protocol_api.ProtocolContext):
         tip_racks=tips)
 
     # set speed for all pipette operations
-    pspeed = 10
+    pspeed = 7.56
 
     # fail if too many samples to be diluted in csv
     dilcnt = len([row[3] for row in data if (row[3] != '1')])
