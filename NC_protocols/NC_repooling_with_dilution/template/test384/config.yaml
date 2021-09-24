@@ -1,0 +1,6 @@
+params:
+  min_vol: 2
+  sp_type: "biorad_96_wellplate_200ul_pcr"
+  dp_type: "biorad_96_wellplate_200ul_pcr"
+csv:
+  uploaded_csv: "random_384csv_data.csv"
