@@ -18,9 +18,14 @@
         "default": "biorad_96_wellplate_200ul_pcr"
     },
     {
-        "type": "str",
-        "label": "destination plate type",
-        "name": "dp_type",
-        "default": "biorad_96_wellplate_200ul_pcr"
+    "type": "dropDown",
+    "label": "destination plate type",
+    "name": "dp_type",
+    "options": [
+        { "label": "biorad_96_wellplate_200ul_pcr",
+            "value": "biorad_96_wellplate_200ul_pcr" },
+        { "label": "opentrons_96_aluminumblock_generic_pcr_strip_200ul",
+            "value": "opentrons_96_aluminumblock_generic_pcr_strip_200ul" }
+        ]
     }
 ]
