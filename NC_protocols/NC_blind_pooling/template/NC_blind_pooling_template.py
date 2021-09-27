@@ -53,9 +53,9 @@ def run(ctx: protocol_api.ProtocolContext):
         raise Exception(usrmsg)
 
     # up top 4 customer plates to pick samples from
-    slots = ['5', '6', '2', '3'][:sp_num]    # slots[0:sp_number]
+    s_slots = ['5', '6', '2', '3'][:sp_num]    # slots[0:sp_number]
     source_list = [
-        ctx.load_labware(sp_type, slot, 'Source plates')
+        ctx.load_labware(sp_type, s_slot, 'Source plates')
         for slot in slots]
 
     destination_plate = ctx.load_labware(
@@ -73,12 +73,12 @@ def run(ctx: protocol_api.ProtocolContext):
     # provision enough tips
     total_tips = sp_num*96+8
     tiprack_num = math.ceil(total_tips/96)
-    slots = ['7', '8', '9', '10', '11'][:tiprack_num]
+    t_slots = ['7', '8', '9', '10', '11'][:tiprack_num]
     tips = [ctx.load_labware(
         'opentrons_96_filtertiprack_20ul',
         slot,
         label='tip_20')
-            for slot in slots]
+            for slot in t_slots]
 
     # define pipette
     pipette = ctx.load_instrument(
@@ -92,7 +92,7 @@ def run(ctx: protocol_api.ProtocolContext):
     ctx.pause(
         '\n\n' + '#'*75 +
         '\nPut Sample plates in deck positions : [' +
-        ' ,'.join(str(e) for e in slots) + '] (in that plate order!)' +
+        ' ,'.join(str(e) for e in s_slots) + '] (in that plate order!)' +
         '\nThen select "Resume" in the Opentrons App\n' +
         '#'*75
         )
@@ -136,11 +136,6 @@ def run(ctx: protocol_api.ProtocolContext):
     ############################
     # pool samples
     ############################
-
-    ctx.comment(
-        "\n    #############################################" +
-        "\n    ## pooling samples to two column pools" +
-        "\n    #############################################\n")
 
     for pltidx in range(0, sp_num, 1):
         # even plates pooled in A1 and odd plates pooled in B1
