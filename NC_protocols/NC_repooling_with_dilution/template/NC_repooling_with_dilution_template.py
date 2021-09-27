@@ -270,7 +270,6 @@ def run(ctx: protocol_api.ProtocolContext):
     set_speeds(pipette, pspeed)
 
     # prefill pool tube with ini_tris uL to receive small volumes
-    # keep tip for first sample
     pipette.pick_up_tip()
     pipette.transfer(
         ini_tris,
