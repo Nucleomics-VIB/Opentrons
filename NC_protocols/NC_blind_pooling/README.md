@@ -27,7 +27,7 @@ The concentration of the individual samples is not taken into account in this pr
 
 * place up to 4 sample plates with DNA samples in positions #[5,6,2,3] (in that order)
 * place the empty dilution plate in position #4
-# fill the first column of the reservoir with Tris (1ml, 320uL required for 16 tubes)
+* NEST 12 Well Reservoir in position #1 with 1ml Tris in the first column (320uL required for 16 tubes)
 
 ### reservoir layout:
 * col1: Tris buffer
