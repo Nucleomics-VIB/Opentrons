@@ -118,7 +118,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
     ctx.comment(
         "\n    #############################################" +
-        "\n    ## prefilling destination tubes with Tris" +
+        "\n    ## pre-filling destination tubes with Tris" +
         "\n    #############################################\n")
 
     # prefill pool columns with ini_tris uL to receive small volumes
@@ -137,14 +137,14 @@ def run(ctx: protocol_api.ProtocolContext):
     # pool samples
     ############################
 
-    ctx.comment(
-        "\n    #############################################" +
-        "\n    ## pooling samples to two column pools" +
-        "\n    #############################################\n")
-
     for pltidx in range(0, sp_num, 1):
         # even plates pooled in A1 and odd plates pooled in B1
         p_col = 'A1' if pltidx % 2 == 0 else 'B1'
+        ctx.comment(
+            "\n    #############################################" +
+            "\n    ## pooling plate " + str(pltidx+1) +
+            " samples to pool column " + str(p_col) +
+            "\n    #############################################\n")
         sample_plate = source_list[pltidx]
         for col in sample_plate.columns()[0:12][0]:
             pipette.transfer(
