@@ -117,10 +117,10 @@ def run(ctx: protocol_api.ProtocolContext):
     ############################
 
     ctx.comment(
-    "\n    #############################################" +
-    "\n    ## prefilling destination tubes with Tris" +
-    "\n    #############################################\n")
-    
+        "\n    #############################################" +
+        "\n    ## prefilling destination tubes with Tris" +
+        "\n    #############################################\n")
+
     # prefill pool columns with ini_tris uL to receive small volumes
     pipette.pick_up_tip()
     for col in ['A1', 'B1']:
@@ -137,9 +137,9 @@ def run(ctx: protocol_api.ProtocolContext):
     ############################
 
     ctx.comment(
-    "\n    #############################################" +
-    "\n    ## pooling samples to two column pools" +
-    "\n    #############################################\n")
+        "\n    #############################################" +
+        "\n    ## pooling samples to two column pools" +
+        "\n    #############################################\n")
 
     for pltidx in range(0, sp_num, 1):
         # even plates pooled in A1 and odd plates pooled in B1
