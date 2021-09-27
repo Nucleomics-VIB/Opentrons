@@ -22,7 +22,7 @@ def get_values(*names):
         "sp_num":4,
         "sp_type":"biorad_96_wellplate_200ul_pcr",
         "dp_type":"biorad_96_wellplate_200ul_pcr",
-        "m20_mount":"right"
+        "m20_mount":"left"
         }""")
     return [_all_values[n] for n in names]
 

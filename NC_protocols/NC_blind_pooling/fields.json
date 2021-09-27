@@ -32,6 +32,6 @@
         "type": "str",
         "label": "p20-multi mount",
         "name": "m20_mount",
-        "default": "right"
-    },
+        "default": "left"
+    }
 ]
