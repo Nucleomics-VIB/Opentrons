@@ -1,4 +1,4 @@
-# NC repooling with dilution
+# NC blind pooling
 
 ### Authors
 [VIB Nucleomics Core](https://www.nucleomics.be)
@@ -9,15 +9,17 @@
 
 ## Description
 
-This protocol takes samples from 96well plates and pools a given quantity (or dilution thereof) to a pool tube. The Pool is later concentrated and QC'ed before processing in a Illumina library prep workflow.
+This protocol takes a fixed volume of all samples from several 96well plates (1..4) and pools them column-wise to two columns in a new plate. The resulting two-columns can be mixed to create a global pool ready for concentration and QC'ed before processing in a Illumina library prep workflow.
+
+The concentration of the individual samples is not taken into account in this protocol and all samples are considered equal. Subsequent differences found by sequencing can be compensated by doing a re-pooling and re-sequencing.
 
 
 ---
 ## Materials
 
 * 5x [Bio-Rad 96 Well Plate 200 µL PCR (hsp9601)](https://labware.opentrons.com/biorad_96_wellplate_200ul_pcr?_gl=1*1a9qcug*_gcl_aw*R0NMLjE2MzE4MDAxNDUuQ2owS0NRanc4SWFHQmhDSEFSSXNBR0lSUllvamg1ZkhXczd1RUt2QTRLRE12cGE5WnBTbndpSmxybkxnVU54QTVJVEowRm04V2txTzhxTWFBbWxIRUFMd193Y0I.*_ga*MjA3NDg2NzQ1MC4xNjMwMDczMjAw*_ga_GNSMNLW4RY*MTYzMTc5OTI5Ny40My4xLjE2MzE4MDAyNTYuMA..)
-* [opentrons_15_tuberack_falcon_15ml_conical](https://labware.opentrons.com/opentrons_15_tuberack_falcon_15ml_conical?category=tubeRack) - 2x 15ml tubes needed
-* [P20 single-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
+* [Opentrons: NEST 12 Well Reservoir 15 mL (360102)](https://www.cell-nest.com/page94?_l=en&product_id=102)
+* [P20 multi-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
 * 5x [Opentrons 96 Filter Tip Rack 20 µL](https://labware.opentrons.com/opentrons_96_filtertiprack_20ul?category=tipRack)
 
 ---
@@ -25,17 +27,17 @@ This protocol takes samples from 96well plates and pools a given quantity (or di
 
 * place up to 4 sample plates with DNA samples in positions #[5,6,2,3] (in that order)
 * place the empty dilution plate in position #4
+# fill the first column of the reservoir with Tris (1ml, 320uL required for 16 tubes)
 
-### tube rack layout (position #1):
-* A1: 15ml tube with Tris buffer for dilution (0.5ml unless more required)
-* C5: 15ml tube for pool
+### reservoir layout:
+* col1: Tris buffer
 
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
 
 ---
 ## Process
-1. Attach the p20 single-chanel to the left mount and calibrate if not yet done.
+1. Attach the p20 multie-chanel to the right mount and calibrate if not yet done.
 2. Download your protocol or adapt it using the NC tool and your CSV file.
 3. Upload your protocol into the [OT App](https://opentrons.com/ot-app).
 4. Set up your deck according to the deck map.
