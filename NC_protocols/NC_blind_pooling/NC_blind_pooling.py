@@ -123,7 +123,8 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # prefill pool columns with ini_tris uL to receive small volumes
     pipette.pick_up_tip()
-    for col in ['A1', 'B1']:
+    pool_cols = ['A1', 'B1']
+    for col in pool_cols[:sp_num]:
         pipette.transfer(
             ini_tris,
             tris,
