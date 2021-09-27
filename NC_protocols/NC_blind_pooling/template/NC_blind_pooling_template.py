@@ -56,7 +56,7 @@ def run(ctx: protocol_api.ProtocolContext):
     s_slots = ['5', '6', '2', '3'][:sp_num]    # slots[0:sp_number]
     source_list = [
         ctx.load_labware(sp_type, s_slot, 'Source plates')
-        for slot in slots]
+        for s_slot in s_slots]
 
     destination_plate = ctx.load_labware(
         dp_type,
@@ -76,9 +76,9 @@ def run(ctx: protocol_api.ProtocolContext):
     t_slots = ['7', '8', '9', '10', '11'][:tiprack_num]
     tips = [ctx.load_labware(
         'opentrons_96_filtertiprack_20ul',
-        slot,
+        t_slot,
         label='tip_20')
-            for slot in t_slots]
+            for t_slot in t_slots]
 
     # define pipette
     pipette = ctx.load_instrument(
