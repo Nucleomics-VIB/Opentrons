@@ -21,7 +21,8 @@ def get_values(*names):
         "sp_vol":<sp_vol>,
         "sp_num":<sp_num>,
         "sp_type":"<sp_type>",
-        "dp_type":"<dp_type>"
+        "dp_type":"<dp_type>",
+        "m20_mount":"<m20_mount>"
         }""")
     return [_all_values[n] for n in names]
 
@@ -30,11 +31,13 @@ def run(ctx: protocol_api.ProtocolContext):
     [sp_vol,
         sp_num,
         sp_type,
-        dp_type] = get_values(    # noqa: F821
+        dp_type,
+        m20_mount] = get_values(    # noqa: F821
         'sp_vol',
         'sp_num',
         'sp_type',
-        'dp_type')
+        'dp_type',
+        'm20_mount')
 
     # reservoir slot for Tris
     reservoir = ctx.load_labware(
@@ -82,8 +85,8 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # define pipette
     pipette = ctx.load_instrument(
-        'p20_single_gen2',
-        'left',
+        'p20_multi_gen2',
+        m20_mount,
         tip_racks=tips)
 
     # set speed for all pipette operations
@@ -123,7 +126,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # prefill pool columns with ini_tris uL to receive small volumes
     pipette.pick_up_tip()
-    pool_cols = ['A1', 'B1']
+    pool_cols = ['A1', 'A2']
     for col in pool_cols[:sp_num]:
         pipette.transfer(
             ini_tris,
@@ -136,17 +139,17 @@ def run(ctx: protocol_api.ProtocolContext):
     ############################
     # pool samples
     ############################
-
-    for pltidx in range(0, sp_num, 1):
+    pltidx = 0
+    for sample_plate in source_list:
         # even plates pooled in A1 and odd plates pooled in B1
-        p_col = 'A1' if pltidx % 2 == 0 else 'B1'
+        pltidx += 1
+        p_col = 'A2' if pltidx % 2 == 0 else 'A1'
         ctx.comment(
             "\n    #############################################" +
-            "\n    ## pooling plate " + str(pltidx+1) +
+            "\n    ## pooling plate " + str(pltidx) +
             " samples to pool column " + str(p_col) +
             "\n    #############################################\n")
-        sample_plate = source_list[pltidx]
-        for col in sample_plate.columns()[0:12][0]:
+        for col in sample_plate.columns():
             pipette.transfer(
                 sp_vol,
                 col,
@@ -157,5 +160,5 @@ def run(ctx: protocol_api.ProtocolContext):
       "\n    #############################################" +
       "\n    ## All done!" +
       "\n    ## you can now pool the column pools" +
-      "\n    ## located in the A1 and B1 columns" +
+      "\n    ## located in the A1 and A2 columns" +
       "\n    #############################################")

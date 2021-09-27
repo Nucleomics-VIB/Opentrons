@@ -27,5 +27,11 @@
         { "label": "opentrons_96_aluminumblock_generic_pcr_strip_200ul",
             "value": "opentrons_96_aluminumblock_generic_pcr_strip_200ul" }
         ]
-    }
+    },
+    {
+        "type": "str",
+        "label": "p20-multi mount",
+        "name": "m20_mount",
+        "default": "right"
+    },
 ]
