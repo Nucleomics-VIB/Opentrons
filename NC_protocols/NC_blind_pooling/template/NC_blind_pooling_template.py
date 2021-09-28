@@ -74,7 +74,8 @@ def run(ctx: protocol_api.ProtocolContext):
     ###################################
 
     # provision enough tips
-    total_tips = sp_num*96+8
+    # total_tips = sp_num*96+8
+    total_tips = sp_num*96
     tiprack_num = math.ceil(total_tips/96)
     t_slots = ['7', '8', '9', '10', '11'][:tiprack_num]
     tips = [ctx.load_labware(
@@ -125,6 +126,7 @@ def run(ctx: protocol_api.ProtocolContext):
         "\n    #############################################\n")
 
     # prefill pool columns with ini_tris uL to receive small volumes
+    # return tips to be reused for the first column of plate#1
     pipette.pick_up_tip()
     pool_cols = ['A1', 'A2']
     for col in pool_cols[:sp_num]:
@@ -134,14 +136,16 @@ def run(ctx: protocol_api.ProtocolContext):
             destination_plate[col],
             new_tip='never'
             )
-    pipette.drop_tip()
+    pipette.return_tip()
+    pipette.reset_tipracks()
+    # pipette.drop_tip()
 
     ############################
     # pool samples
     ############################
     pltidx = 0
     for sample_plate in source_list:
-        # even plates pooled in A1 and odd plates pooled in B1
+        # even plates pooled in A2 and odd plates pooled in A1
         pltidx += 1
         p_col = 'A2' if pltidx % 2 == 0 else 'A1'
         ctx.comment(
@@ -149,16 +153,19 @@ def run(ctx: protocol_api.ProtocolContext):
             "\n    ## pooling plate " + str(pltidx) +
             " samples to pool column " + str(p_col) +
             "\n    #############################################\n")
+        # mix 5x5uL in samples before aspirating sp_vo
         for col in sample_plate.columns():
             pipette.transfer(
                 sp_vol,
                 col,
-                destination_plate[p_col]
+                destination_plate[p_col].bottom(),
+                new_tip='always',
+                mix_before=[5, 5]
                 )
 
     ctx.comment(
       "\n    #############################################" +
       "\n    ## All done!" +
-      "\n    ## you can now pool the column pools" +
+      "\n    ## you can now pool the plate pools" +
       "\n    ## located in the A1 and A2 columns" +
       "\n    #############################################")
