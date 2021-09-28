@@ -166,6 +166,6 @@ def run(ctx: protocol_api.ProtocolContext):
     ctx.comment(
       "\n    #############################################" +
       "\n    ## All done!" +
-      "\n    ## you can now pool the plate pools" +
+      "\n    ## you can now mix the plate pools" +
       "\n    ## located in the A1 and A2 columns" +
       "\n    #############################################")
