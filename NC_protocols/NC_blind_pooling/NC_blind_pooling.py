@@ -125,7 +125,7 @@ def run(ctx: protocol_api.ProtocolContext):
         "\n    ## pre-filling destination tubes with Tris" +
         "\n    #############################################\n")
 
-    # prefill pool columns with ini_tris uL to receive small volumes
+    # prefill pool column(s) with ini_tris uL to receive small volumes
     # return tips to be reused for the first column of plate#1
     pipette.pick_up_tip()
     pool_cols = ['A1', 'A2']
@@ -167,5 +167,5 @@ def run(ctx: protocol_api.ProtocolContext):
       "\n    #############################################" +
       "\n    ## All done!" +
       "\n    ## you can now mix the plate pools" +
-      "\n    ## located in the A1 and A2 columns" +
+      "\n    ## located in the A1 (and A2!) columns" +
       "\n    #############################################")
