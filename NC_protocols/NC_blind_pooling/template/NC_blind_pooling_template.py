@@ -33,11 +33,11 @@ def run(ctx: protocol_api.ProtocolContext):
         sp_type,
         dp_type,
         m20_mount] = get_values(    # noqa: F821
-        'sp_vol',
-        'sp_num',
-        'sp_type',
-        'dp_type',
-        'm20_mount')
+            'sp_vol',
+            'sp_num',
+            'sp_type',
+            'dp_type',
+            'm20_mount')
 
     # reservoir slot for Tris
     reservoir = ctx.load_labware(
