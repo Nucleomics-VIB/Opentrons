@@ -16,22 +16,22 @@ def run(ctx: protocol_api.ProtocolContext):
     # Defining Pipette
     p20_single = ctx.load_instrument(
         'p20_single_gen2',
-        'left',
+        'right',
         tip_racks=[tr1])
 
     # Block Command picking up tip
     p20_single.pick_up_tip()
 
-    def xcomment(text, funcprot=ctx):
+    def xcomment(text, funcprot=ctx, bchar='#'):
         import io
-        width = len(max(io.StringIO(text), key=len).rstrip())+6
-        funcprot.comment('\n' + '#'*width)
+        width = len(max(io.StringIO(text), key=len).rstrip())+4
+        funcprot.comment('\n' + bchar*width)
         for line in io.StringIO(text):
             if not line.isspace():  # omit empty lines
                 # remove trailing spaces and line feeds
-                funcprot.comment('#'*2 + line.rstrip())
+                funcprot.comment(bchar*2 + line.rstrip())
         # leave one empty line below
-        funcprot.comment('#'*width + '\n')
+        funcprot.comment(bchar*width + '\n')
 
     def xpause(text, funcprot=ctx):
         xcomment(text)
@@ -45,18 +45,26 @@ def run(ctx: protocol_api.ProtocolContext):
       1) or some numbered list
     '''
 
+    #my_text=" This is line number 1\n  * line 2 is here\n  *  and this is line 3\n     - with some more indent\n  1) or some numbered list"
+
     ctx.comment('\n## comment\n')
 
     ctx.comment(my_text)
 
-    ctx.comment('## xcomment\n')
+    ctx.comment('\n## xcomment')
 
     xcomment(my_text)
 
-    ctx.comment('## pause\n')
+    xcomment(my_text, bchar='@')
+
+    xcomment(my_text, bchar='+')
+
+    xcomment(my_text, bchar='=')
+    
+    ctx.comment('\n## pause\n')
 
     ctx.pause(my_text)
 
-    ctx.comment('## xpause\n')
+    ctx.comment('\n## xpause')
 
     xpause(my_text)
