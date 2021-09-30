@@ -16,7 +16,7 @@ def run(ctx: protocol_api.ProtocolContext):
     # Defining Pipette
     p20_single = ctx.load_instrument(
         'p20_single_gen2',
-        'right',
+        'left',
         tip_racks=[tr1])
 
     # Block Command picking up tip
