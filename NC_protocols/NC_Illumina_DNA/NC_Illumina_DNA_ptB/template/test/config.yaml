@@ -1,0 +1,8 @@
+params:
+  spl_nbr: 48
+  plate_s_col: 1
+  tip_park_s_col: 1
+  asp_height: 1.0
+  mm_from_s: 2.0
+  m20_mount: "left"
+  m300_mount: "right"
