@@ -38,8 +38,8 @@ Vortex BLT and TB1 vigorously for 10 seconds before dispensing in the mastermix 
 ### reagent plate layout:
 * col1: mastermix from the kit BLT and TB1 stocks (vortexed before adding to plate)
 
-<img src="Deck%20layout%20pt1_48s.png"
-     alt="pt1_deck_48"
+<img src="Deck%20layout%20ptA.png"
+     alt="ptA_deck"
      style="float: left; margin-right: 10px;" />
 
 ### Robot

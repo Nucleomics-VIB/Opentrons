@@ -41,8 +41,8 @@ Prepare solutions and fill the reservoir slots when prompted
 * col6 general waste
 * col7-col12 (individual wastes per column)
 
-<img src="Deck%20layout%20pt3_48s.png"
-     alt="pt1_deck_48"
+<img src="Deck%20layout%20ptB.png"
+     alt="ptB_deck"
      style="float: left; margin-right: 10px;" />
 
 ### Robot
