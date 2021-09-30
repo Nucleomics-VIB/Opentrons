@@ -1,0 +1,44 @@
+[
+    {
+        "type": "int",
+        "label": "number of samples",
+        "name": "spl_nbr",
+        "default": 48
+    },
+    {
+        "type": "int",
+        "label": "plate start column",
+        "name": "plate_s_col",
+        "default": 1
+    },
+    {
+        "type": "int",
+        "label": "tip park start column",
+        "name": "tip_park_s_col",
+        "default": 1
+    },
+    {
+        "type": "float",
+        "label": "aspirate height",
+        "name": "asp_height",
+        "default": 1.0
+    },
+    {
+        "type": "float",
+        "label": "mm from side",
+        "name": "mm_from_s",
+        "default": 2.0
+    },
+    {
+        "type": "str",
+        "label": "p20-multi mount",
+        "name": "m20_mount",
+        "default": "left"
+    },
+    {
+        "type": "str",
+        "label": "p300-multi mount",
+        "name": "m300_mount",
+        "default": "right"
+    }
+]
