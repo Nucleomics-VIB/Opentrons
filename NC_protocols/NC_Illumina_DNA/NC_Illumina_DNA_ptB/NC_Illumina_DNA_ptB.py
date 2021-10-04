@@ -375,11 +375,12 @@ def run(ctx):
                 extra_vol=0,
                 disp_rate=2.0,
                 pip=m300)
+            # aspirate remaining 140uL and drop the tip with ethanol in it
             remove_sn(
                 vol=140,
                 index=i,
                 loc=sample,
-                trash='waste',
+                trash=None,
                 d_asp_height=-0.5,
                 extra_vol=60,
                 disp_rate=2.0,
