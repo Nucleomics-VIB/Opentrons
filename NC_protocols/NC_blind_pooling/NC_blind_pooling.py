@@ -55,7 +55,7 @@ def run(ctx: protocol_api.ProtocolContext):
             ' an integer between 1 and 4')
         raise Exception(usrmsg)
 
-    # up top 4 customer plates to pick samples from
+    # up to 4 customer plates to pick samples from
     s_slots = ['5', '6', '2', '3'][:sp_num]    # slots[0:sp_number]
     source_list = [
         ctx.load_labware(sp_type, s_slot, 'Source plates')
@@ -89,9 +89,6 @@ def run(ctx: protocol_api.ProtocolContext):
         'p20_multi_gen2',
         m20_mount,
         tip_racks=tips)
-
-    # set speed for all pipette operations
-    pspeed = 7.56
 
     ctx.pause(
         '\n\n' + '#'*75 +
