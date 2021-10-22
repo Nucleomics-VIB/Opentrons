@@ -1,0 +1,6 @@
+params:
+  sp_vol: 2.0
+  sp_num: 4
+  sp_type: "biorad_96_wellplate_200ul_pcr"
+  dp_type: "biorad_96_wellplate_200ul_pcr"
+  m20_mount: "left"
