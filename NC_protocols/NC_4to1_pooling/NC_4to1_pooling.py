@@ -4,8 +4,8 @@ from opentrons import protocol_api
 metadata = {
         'protocolName': 'NC_4to1_pooling',
         'author': 'nucleomics@vib.be',
-        'description': 'Fixed-volume pooling from 4 half-96well plates \
-        to columns in a new plate',
+        'description': 'Consolidate 4 x 1/2 plates to 2 ful plates \
+        and create a 8-well pool series with fixed volumes of each well',
         'source': 'VIB Nucleomics',
         'apiLevel': '2.11'
         }
@@ -83,8 +83,8 @@ def run(ctx: protocol_api.ProtocolContext):
         label='Reservoir')
     tris = reservoir['A1']
 
-    # 4 customer plates to pick samples from
-    # only the half part of each plate contains libraries
+    # 4 library plates with only the right-half part
+    # of each plate contains libraries
     s_slots = ['5', '6', '2', '3']
     source_list = [
         ctx.load_labware(
@@ -99,7 +99,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
     ctx.pause(
         '\n\n' + '#'*75 +
-        '\nPut Sample plates in deck positions : [' +
+        '\nPut library plates in deck positions : [' +
         ' ,'.join(str(e) for e in s_slots) + '] (in that plate order!)' +
         '\nThen select "Resume" in the Opentrons App\n' +
         '#'*75
@@ -120,12 +120,11 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # set speed for all pipette operations
     pspeed = 7.56
-
     set_speeds(pipette, pspeed)
 
-    ############################
-    # fill pool tube 20 uL Tris
-    ############################
+    #########################################
+    # fill pool tube ini_tris volume of Tris
+    #########################################
 
     ctx.comment(
         "\n    #############################################" +
@@ -146,13 +145,15 @@ def run(ctx: protocol_api.ProtocolContext):
     pipette.reset_tipracks()
 
     ##############################################
-    # transfer half-plates to a common plate
+    # transfer half-plates to full plates
     # then take sp_vol to the pool with same tips
     ##############################################
 
     pltidx = 0
-    col_rg1 = range(1, 7, 1)
-    col_rg2 = range(7, 13, 1)
+    col_rg1 = []
+    [col_rg1.append('A' + str(col)) for col in range(1, 7, 1)]
+    col_rg2 = []
+    [col_rg2.append('A' + str(col)) for col in range(7, 13, 1)]
 
     # start in loop with value 1 for plate in position #5
     pltidx = 0
@@ -166,12 +167,13 @@ def run(ctx: protocol_api.ProtocolContext):
 
         ctx.comment(
             "\n    #############################################" +
-            "\n    ## pooling plate " + str(pltidx) +
+            "\n    ## transferring and pooling plate " + str(pltidx) +
             "\n    #############################################\n")
 
         # transfer all to merging pate
-        for i, (scol, dcol) in enumerate(zip(col_rg1, col_rg)):
-            # transfer all to merging plate
+        for i, (scol, dcol) in enumerate(zip(col_rg2, col_rg)):
+            # transfer all to merging plate .bottom()
+            pipette.pick_up_tip()
             pipette.transfer(
                 tot_vol,
                 sample_plate[scol].bottom(),
@@ -182,13 +184,15 @@ def run(ctx: protocol_api.ProtocolContext):
             pipette.transfer(
                 sp_vol,
                 m_pl[dcol].bottom(),
-                pooling_plate['A1'],
-                new_tip='always'
+                pooling_plate['A1'].bottom(),
+                new_tip='never'
             )
+            pipette.drop_tip()
 
     ctx.comment(
-        "\n    #############################################" +
+        "\n    ##############################" +
         "\n    ## All done!" +
         "\n    ## you can now mix the pools" +
         "\n    ## located in the A1 column" +
-        "\n    #############################################")
+        "\n    ## to a single tube" +
+        "\n    ##############################")
