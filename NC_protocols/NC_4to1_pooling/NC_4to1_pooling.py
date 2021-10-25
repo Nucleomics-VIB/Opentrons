@@ -10,8 +10,8 @@ metadata = {
         'apiLevel': '2.11'
         }
 
-# template version 1.0; 2021_10_22 (SP)
-# edit date 2021-10-22
+# template version 1.01; 2021_10_22 (SP)
+# edit date 2021-10-25
 
 
 def get_values(*names):
