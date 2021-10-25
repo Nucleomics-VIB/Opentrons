@@ -1,6 +1,7 @@
 params:
+  tot_vol: 30.0
   sp_vol: 2.0
-  sp_num: 4
+  ini_tris: 10.0
   sp_type: "biorad_96_wellplate_200ul_pcr"
   dp_type: "biorad_96_wellplate_200ul_pcr"
   m20_mount: "left"

@@ -1,9 +1,9 @@
 [
     {
-        "type": "int",
-        "label": "plate number",
-        "name": "sp_num",
-        "default": 4
+        "type": "float",
+        "label": "total volume",
+        "name": "tot_vol",
+        "default": 30.0
     },
     {
         "type": "float",
@@ -12,21 +12,22 @@
         "default": 2.0
     },
     {
+        "type": "float",
+        "label": "initial tris volume",
+        "name": "ini_tris",
+        "default": 10.0
+    },
+    {
         "type": "str",
         "label": "source plate type",
         "name": "sp_type",
         "default": "biorad_96_wellplate_200ul_pcr"
     },
     {
-    "type": "dropDown",
-    "label": "destination plate type",
-    "name": "dp_type",
-    "options": [
-        { "label": "biorad_96_wellplate_200ul_pcr",
-            "value": "biorad_96_wellplate_200ul_pcr" },
-        { "label": "opentrons_96_aluminumblock_generic_pcr_strip_200ul",
-            "value": "opentrons_96_aluminumblock_generic_pcr_strip_200ul" }
-        ]
+        "type": "str",
+        "label": "destination plate type",
+        "name": "dp_type",
+        "default": "biorad_96_wellplate_200ul_pcr"
     },
     {
         "type": "str",
