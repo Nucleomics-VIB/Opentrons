@@ -180,6 +180,16 @@ def run(ctx: protocol_api.ProtocolContext):
                 m_pl[dcol].bottom(),
                 new_tip='never'
             )
+            # mix in place before taking small volume to pool
+            # !! theoretically, the third parameter (location)
+            # could be omitted here
+            mix_iter = 5
+            mix_vol = 10
+            pipette.mix(
+                mix_iter,
+                mix_vol,
+                m_pl[dcol].bottom()
+            )
             # transfer some further to the pool with same tip
             pipette.transfer(
                 sp_vol,
