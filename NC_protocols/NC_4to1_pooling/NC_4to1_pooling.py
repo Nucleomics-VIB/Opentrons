@@ -10,7 +10,7 @@ metadata = {
         'apiLevel': '2.11'
         }
 
-# template version 1.01; 2021_10_22 (SP)
+# template version 1.02; 2021_10_22 (SP)
 # edit date 2021-10-25
 
 
@@ -174,27 +174,23 @@ def run(ctx: protocol_api.ProtocolContext):
         for i, (scol, dcol) in enumerate(zip(col_rg2, col_rg)):
             # transfer all to merging plate .bottom()
             pipette.pick_up_tip()
+            pipette.mix(
+                repetitions=5,
+                volume=15,
+                location=sample_plate[scol].bottom(z=+1),
+                rate=2
+            )
             pipette.transfer(
                 tot_vol,
-                sample_plate[scol].bottom(),
-                m_pl[dcol].bottom(),
+                sample_plate[scol].bottom(z=+1),
+                m_pl[dcol].bottom(z=+1),
                 new_tip='never'
-            )
-            # mix in place before taking small volume to pool
-            # !! theoretically, the third parameter (location)
-            # could be omitted here
-            mix_iter = 5
-            mix_vol = 10
-            pipette.mix(
-                mix_iter,
-                mix_vol,
-                m_pl[dcol].bottom()
             )
             # transfer some further to the pool with same tip
             pipette.transfer(
                 sp_vol,
-                m_pl[dcol].bottom(),
-                pooling_plate['A1'].bottom(),
+                m_pl[dcol].bottom(z=+1),
+                pooling_plate['A1'].bottom(z=+1),
                 new_tip='never'
             )
             pipette.drop_tip()
