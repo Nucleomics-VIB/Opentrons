@@ -13,6 +13,18 @@ metadata = {
 # version 1.0b; 2022_11_24 (SP)
 # edit date ....
 
+### example config.yaml ###
+
+## params:
+##  plate_type: "biorad_96_wellplate_200ul_pcr"
+##  labware_reservoir: "nest_12_reservoir_15ml"
+##  res_vol: 500.0
+##  min_vol: 2.0
+##  max_vol: 100.0
+##  pspeed: 7.56
+##csv:
+##  uploaded_csv: "data.csv"
+
 # imported csv is made of up to 96 rows of 2 columns (Position,Value)
 
 def get_values(*names):
@@ -97,35 +109,6 @@ def run(ctx: protocol_api.ProtocolContext):
     def reset_speeds(pip):
         pip.flow_rate.set_defaults(ctx.api_version)
 
-    # load uploaded_csv in a list and computer required buffer
-    def prep_data(uploaded_csv, res_vol, min_vol, max_vol):
-
-        nonlocal tfers
-        nonlocal vol_list
-        nonlocal buffer_needed
-        nonlocal bufferslots
-
-        # csv as list of dictionaries
-        tfers = [line for line in csv.DictReader(uploaded_csv.splitlines())]
-
-        # create list of all volumes
-        pos_list = [tfer['Position'] for tfer in tfers if tfer['Position']]
-        vol_list = [round(float(tfer['Value']),2) for tfer in tfers if tfer['Value']]
-
-        # check if all volumes are in accepted range [5:100]
-        if min(vol_list) < float(min_vol) or max(vol_list) > float(max_vol):
-            usrmsg = (
-                'some buffer volume(s) in csv are not in range of ' +
-                str(min_vol) + ' - ' + str(max_vol)
-                )
-            raise Exception(usrmsg)
-
-        # estimate total buffer volume (ml) based on sum of all imported volumes
-        buffer_needed = round(sum([float(tfer['Value']) for tfer in tfers if tfer['Value']])/1000.0,2)
-
-        # how many buffer slots are needed?
-        bufferslots = math.ceil(float(buffer_needed)*1000/float(res_vol))
-
     #  debug code to get variable content
     def test(buffer_counter, bufferidx, bufferslots, tfers):
         print(buffer_counter)
@@ -190,13 +173,27 @@ def run(ctx: protocol_api.ProtocolContext):
     set_speeds(pipette300s, pspeed)
 
     # initialize variables
-    tfers = list()
-    pos_list = list()
-    vol_list = list()
-    buffer_needed = float(0.0)
-    bufferslots = int(1)
+    
+    # csv as list of dictionaries
+    tfers = [line for line in csv.DictReader(uploaded_csv.splitlines())]
 
-    prep_data(uploaded_csv, res_vol, min_vol, max_vol) # tfers, vol_list, buffer_needed, bufferslots)
+    # create list of all volumes
+    pos_list = [tfer['Position'] for tfer in tfers if tfer['Position']]
+    vol_list = [round(float(tfer['Value']),2) for tfer in tfers if tfer['Value']]
+
+    # check if all volumes are in accepted range [5:100]
+    if min(vol_list) < float(min_vol) or max(vol_list) > float(max_vol):
+        usrmsg = (
+            'some buffer volume(s) in csv are not in range of ' +
+            str(min_vol) + ' - ' + str(max_vol)
+            )
+        raise Exception(usrmsg)
+
+    # estimate total buffer volume (ml) based on sum of all imported volumes
+    buffer_needed = round(sum([float(tfer['Value']) for tfer in tfers if tfer['Value']])/1000.0,2)
+
+    # how many buffer slots are needed?
+    bufferslots = math.ceil(float(buffer_needed)*1000/float(res_vol))
 
     # inform about the volume of buffer needed
     ctx.comment("## the run will use " + str(buffer_needed) + "mL dilution buffer")
