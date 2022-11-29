@@ -17,7 +17,7 @@ The protocol is able to fill any part of a 96well plate based on, the provided C
 
 ### IMPORTANT NOTE ###
 
-The CSV data should be saved as a two columns, comma-separated text file (!! _Windows user_ : ',' => not ';' !!) with 'Positions' being well addresses (A1) and all volumes ('Value') given with a decimal separator '.' as in the following example
+The CSV data should be saved as a two columns, comma-separated text file (!! _Windows user_ : ',' => not ';' !!) with 'Positions' being well addresses (A1) and all volumes ('Value') given with a dot => '.' as decimal separator as in the following example
 
 ```
 Position,Value
