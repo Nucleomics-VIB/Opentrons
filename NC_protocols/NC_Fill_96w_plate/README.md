@@ -43,13 +43,15 @@ The protocol exist in two ''flavors'', one using a reservoir for buffer and liqu
 ## Process
 1. Attach the p20 single-chanel to the left mount and calibrate if not yet done.
 1. Attach the p300 single-chanel to the right mount and calibrate if not yet done.
-2. Download your protocol or adapt it using the NC tool and your CSV file.
-3. Upload your protocol into the [OT App](https://opentrons.com/ot-app).
-4. Set up your deck according to the deck map.
-5. Calibrate your labware, tiprack and pipette using the OT App. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
-6. Hit "Run".
+2. Download your protocol template ('''from the template folder''')
+3. Edit the config.yaml file and prepare a data.csv CSV file
+4. Inject the ''yaml'' and ''CSV'' data in the template using the '''[NC webtool](http://10.112.84.39/cgi-bin/OT2MakeProtocol/OT2MakeProtocol.php)''' 
+5. Upload your protocol into the [OT App](https://opentrons.com/ot-app).
+5. Set up your deck according to the deck map.
+6. Calibrate your labware, tiprack and pipette using the OT App. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
+7. Hit "Run".
 
 ### Additional Notes
 If you have any questions about this protocol, please contact the Protocol Development Team by filling out the [Troubleshooting Survey](https://protocol-troubleshooting.paperform.co/).
 
-_last update: SP - 2022-11-29__
+_last update: SP - 2022-11-29_
