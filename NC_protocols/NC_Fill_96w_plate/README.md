@@ -13,6 +13,23 @@ This protocol distributes a solution (buffer) to a 96 well plate based on a CSV 
 
 The protocol exist in two _flavors_, one using a reservoir for buffer and liquid trash (_costly_) and a _savvy_ one using eppendorf tubes in a tube-rack.
 
+The protocol is able to fill any part of a 96well plate based on, the provided CSV file, this includes a single column or row, several columns or rows or even separate wells.
+
+### IMPORTANT NOTE ###
+
+The CSV data should be saved as a two columns, comma-separated text file (!! _Windows user_ : ',' => not ';' !!) and all volumes given with a decimal separator '.' as in the following example
+
+```
+Position,Value
+A1,6.5
+A2,18.3
+A3,80.5
+...
+```
+
+_The header should be kept as _Position,Value_ as these names are used in the code_
+
+The volumes 
 ---
 ## Materials
 
