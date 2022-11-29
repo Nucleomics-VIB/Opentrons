@@ -31,7 +31,7 @@ def get_values(*names):
     import json
     _all_values = json.loads("""{
         "plate_type":"biorad_96_wellplate_200ul_pcr",
-        "tube_rack"":"opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap",
+        "tube_rack":"opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap",
         "res_vol":"1000.0",
         "min_vol":"2.0",
         "max_vol":100.0,

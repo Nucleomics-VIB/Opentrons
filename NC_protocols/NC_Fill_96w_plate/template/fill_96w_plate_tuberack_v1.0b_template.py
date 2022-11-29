@@ -31,7 +31,7 @@ def get_values(*names):
     import json
     _all_values = json.loads("""{
         "plate_type":"<plate_type>",
-        "tube_rack"":"<tube_rack>",
+        "tube_rack":"<tube_rack>",
         "res_vol":"<res_vol>",
         "min_vol":"<min_vol>",
         "max_vol":<max_vol>,
