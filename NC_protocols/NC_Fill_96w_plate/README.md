@@ -32,8 +32,8 @@ The protocol exist in two _flavors_, one using a reservoir for buffer and liquid
 * _ALT:_ tube-rack with eppendorf tubes in the first row (A1..A4) for buffer and A6 as waste tube
 
 ### reservoir layout:
-* col#1: Tris buffer 10mM
-* _ALT:_ first row: 1mL Tris buffer 10mM in each buffer tube
+* col#1: 6mL Tris buffer 10mM
+* _ALT:_ first row: 1.2mL Tris buffer 10mM in each buffer tube
 
 
 ### Robot
