@@ -13,7 +13,7 @@ This protocol distributes a solution (buffer) to a 96 well plate based on a CSV 
 
 The protocol exist in two _flavors_, one using a reservoir for buffer and liquid trash (_costly_) and a _savvy_ one using eppendorf tubes in a tube-rack.
 
-The protocol is able to fill any part of a 96well plate based on, the provided CSV file, this includes a single column or row, several columns or rows or even separate wells.
+The protocols can fill any part of a 96well plate based on the provided CSV file, this includes a single column or row, several columns or rows, or even individual wells (just produce the CSV list accordingly).
 
 ### IMPORTANT NOTE ###
 
