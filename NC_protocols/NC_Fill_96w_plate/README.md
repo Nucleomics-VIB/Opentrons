@@ -11,7 +11,7 @@
 
 This protocol distributes a solution (buffer) to a 96 well plate based on a CSV file providing [well-names + volume] pairs.
 
-The protocol exist in two ''flavors'', one using a reservoir for buffer and liquid trash (''costly'') and a ''savvy'' one using eppendorf tubes in a tube-rack.
+The protocol exist in two *flavors*, one using a reservoir for buffer and liquid trash (*costly*) and a *savvy* one using eppendorf tubes in a tube-rack.
 
 ---
 ## Materials
@@ -43,9 +43,9 @@ The protocol exist in two ''flavors'', one using a reservoir for buffer and liqu
 ## Process
 1. Attach the p20 single-chanel to the left mount and calibrate if not yet done.
 1. Attach the p300 single-chanel to the right mount and calibrate if not yet done.
-2. Download your protocol template ('''from the template folder''')
+2. Download your protocol template (**from the template folder**)
 3. Edit the config.yaml file and prepare a data.csv CSV file
-4. Inject the ''yaml'' and ''CSV'' data in the template using the '''[NC webtool](http://10.112.84.39/cgi-bin/OT2MakeProtocol/OT2MakeProtocol.php)''' 
+4. Inject the ''yaml'' and ''CSV'' data in the template using the **[NC webtool](http://10.112.84.39/cgi-bin/OT2MakeProtocol/OT2MakeProtocol.php)** 
 5. Upload your protocol into the [OT App](https://opentrons.com/ot-app).
 5. Set up your deck according to the deck map.
 6. Calibrate your labware, tiprack and pipette using the OT App. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
