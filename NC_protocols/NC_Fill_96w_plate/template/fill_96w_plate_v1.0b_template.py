@@ -184,7 +184,7 @@ def run(ctx: protocol_api.ProtocolContext):
             )
         raise Exception(usrmsg)
 
-    # estimate total buffer volume (ml) based on sum of all imported volumes
+    # estimate total buffer volume (mL) based on sum of all imported volumes
     buffer_needed = round(sum([float(tfer['Value']) for tfer in tfers if tfer['Value']])/1000.0,2)
 
     # how many buffer slots are needed?
@@ -193,11 +193,11 @@ def run(ctx: protocol_api.ProtocolContext):
     # inform about the volume of buffer needed
     ctx.comment("## the run will use " + str(buffer_needed) + "mL dilution buffer")
 
-    ctx.pause("## Fill " + str(bufferslots) + " buffer slot(s) with " + str(float(res_vol)*1.2) + "ml buffer (each)")
+    ctx.pause("## Fill '" + str(bufferslots) + "' reagent container slot(s) with " + str(float(res_vol)*1.2/1000) + "mL buffer (each)")
 
     ctx.pause(
         '\n\n' + '#'*75 +
-        '\nPut an empty 96w plate in deck positions : 1' +
+        '\nInsert an empty 96w plate in deck positions : 1' +
         '\nThen select "Resume" in the Opentrons App\n' +
         '#'*75
         )
