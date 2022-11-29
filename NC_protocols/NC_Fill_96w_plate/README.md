@@ -29,11 +29,11 @@ The protocol exist in two _flavors_, one using a reservoir for buffer and liquid
 
 * place 1 empty plates in position  #[1]
 * NEST 12 Well Reservoir in position #4 with 6mL Tris in col#1
-* _ALT_ tube-rack with eppendorf tubes in the first row (A1..A4) for buffer and A6 as waste tube
+* _ALT:_ tube-rack with eppendorf tubes in the first row (A1..A4) for buffer and A6 as waste tube
 
 ### reservoir layout:
 * col#1: Tris buffer 10mM
-* _ALT_ first row: 1mL Tris buffer 10mM in each buffer tube
+* _ALT:_ first row: 1mL Tris buffer 10mM in each buffer tube
 
 
 ### Robot
