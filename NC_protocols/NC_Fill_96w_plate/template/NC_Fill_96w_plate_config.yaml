@@ -1,0 +1,9 @@
+params:
+  plate_type: "biorad_96_wellplate_200ul_pcr"
+  labware_reservoir: "nest_12_reservoir_15ml"
+  res_vol: 1000.0
+  min_vol: 2.0
+  max_vol: 100.0
+  pspeed: 7.56
+csv:
+  uploaded_csv: "data.csv"

@@ -18,7 +18,7 @@ metadata = {
 ## params:
 ##  plate_type: "biorad_96_wellplate_200ul_pcr"
 ##  labware_reservoir: "nest_12_reservoir_15ml"
-##  res_vol: 500.0
+##  res_vol: 1000.0
 ##  min_vol: 2.0
 ##  max_vol: 100.0
 ##  pspeed: 7.56
@@ -119,7 +119,7 @@ def run(ctx: protocol_api.ProtocolContext):
         print("buffer slots:", str(bufferslots))
         print(tfers)
 
-    # do the pippetting
+    # do the pipetting
     def process_data(tfers, buffer, buffer_counter, bufferidx):
 
         # process well by well from uploaded_csv
@@ -138,9 +138,6 @@ def run(ctx: protocol_api.ProtocolContext):
                 usedpip = "p300"
                 s_pipette = pipette300s
 
-            # debug
-            # print("# ", usedpip, "used for", s_well, "vol:", s_vol)
-            
             buffer_counter += s_vol
             #print(float(s_vol), buffer_counter)
             if float(buffer_counter) > float(res_vol):
@@ -161,8 +158,6 @@ def run(ctx: protocol_api.ProtocolContext):
                 blowout_location='destination well',
                 new_tip='never'
                 )
-            # comment out to keep same tip for the whole process
-            # s_pipette.drop_tip()
     
     ############################
     # PROTOCOL STARTS HERE
@@ -198,11 +193,11 @@ def run(ctx: protocol_api.ProtocolContext):
     # inform about the volume of buffer needed
     ctx.comment("## the run will use " + str(buffer_needed) + "mL dilution buffer")
 
-    ctx.pause("## please fill " + str(bufferslots) + " buffer slot(s) with " + str(float(res_vol)*1.2) + "ml buffer (each)")
+    ctx.pause("## Fill " + str(bufferslots) + " buffer slot(s) with " + str(float(res_vol)*1.2) + "ml buffer (each)")
 
     ctx.pause(
         '\n\n' + '#'*75 +
-        '\nPut Put an empty 96w plate in deck positions : 1' +
+        '\nPut an empty 96w plate in deck positions : 1' +
         '\nThen select "Resume" in the Opentrons App\n' +
         '#'*75
         )
