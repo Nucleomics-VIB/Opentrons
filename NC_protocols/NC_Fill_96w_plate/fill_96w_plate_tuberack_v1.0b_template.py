@@ -34,7 +34,7 @@ def get_values(*names):
         "tube_rack":"<tube_rack>",
         "res_vol":"<res_vol>",
         "min_vol":"<min_vol>",
-        "max_vol":<max_vol>,
+        "max_vol":"<max_vol>",
         "pspeed":"<pspeed>",
         "uploaded_csv":"<uploaded_csv>"        
         }""")
@@ -69,7 +69,6 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # number of buffer slots required for this experiment
     bufferslots = 1
-    liquid_waste = tuberack.wells_by_name()['A6']
     
     # provision enough tips for 2 plates
     slots = ['7']
@@ -110,16 +109,6 @@ def run(ctx: protocol_api.ProtocolContext):
     def reset_speeds(pip):
         pip.flow_rate.set_defaults(ctx.api_version)
 
-    #  debug code to get variable content
-    def test(buffer_counter, bufferidx, bufferslots, tfers):
-        print(buffer_counter)
-        print(type(buffer_counter))
-        print(bufferidx)
-        print(type(bufferidx))
-        print("buffer needed:", str(buffer_needed))
-        print("buffer slots:", str(bufferslots))
-        print(tfers)
-
     # do the pipetting
     def process_data(tfers, buffer, buffer_counter, bufferidx):
 
@@ -142,9 +131,6 @@ def run(ctx: protocol_api.ProtocolContext):
             buffer_counter += s_vol
             if float(buffer_counter) > float(res_vol):
 
-                # debug
-                # print ("# We used " + str(round(buffer_counter, 1)) + " uL buffer from tube " + buffer_wells[bufferidx-1])
-
                 bufferidx += 1
                 buffer_counter = float(s_vol)
                 buffer = tuberack.wells_by_name()[buffer_wells[bufferidx-1]]
@@ -158,8 +144,7 @@ def run(ctx: protocol_api.ProtocolContext):
                 s_vol,
                 buffer,
                 dilution_plate.wells_by_name()[s_well],
-                blow_out=True,
-                blowout_location='destination well',
+                blow_out=False,
                 new_tip='never'
                 )
     
@@ -180,7 +165,15 @@ def run(ctx: protocol_api.ProtocolContext):
     pos_list = [tfer['Position'] for tfer in tfers if tfer['Position']]
     vol_list = [round(float(tfer['Value']),2) for tfer in tfers if tfer['Value']]
 
-    # check if all volumes are in accepted range [5:100]
+    # fail if tfers is longer than max 96 wells
+    if len(vol_list) > 96
+        usrmsg = (
+            'this protocol can handle onlyuyp to '96' wells and you gave in ' +
+            str(len(vol_list)) + ' data rows'
+            )
+        raise Exception(usrmsg)
+
+    # fail if some requested volumes are outside of accepted range [min_vol:max_vol]
     if min(vol_list) < float(min_vol) or max(vol_list) > float(max_vol):
         usrmsg = (
             'some buffer volume(s) in csv are not in range of ' +
@@ -197,8 +190,9 @@ def run(ctx: protocol_api.ProtocolContext):
     # inform about the volume of buffer needed
     ctx.comment("## the run will use " + str(buffer_needed) + "mL dilution buffer")
 
-    ctx.pause("## Insert '" + str(bufferslots) + "' 1.5ml tubes with " + str(float(res_vol)*1.2) + "ml buffer in the tube rack (" + str(buffer_wells[0:bufferslots]) + ")" + "\n## and an empty eppendorf tube in position 'A6'")
-
+    ctx.pause("## Insert '" + str(bufferslots) + "' 1.5ml tubes with " + 
+        str(float(res_vol)*1.2) + "ml buffer in the tube rack (" + str(buffer_wells[0:bufferslots]) + ")")
+        
     ctx.pause(
         '\n\n' + '#'*75 +
         '\nInsert an empty 96w plate in deck positions : 1' +
@@ -206,9 +200,6 @@ def run(ctx: protocol_api.ProtocolContext):
         '#'*75
         )
 
-    # used or debugging
-    # test(buffer_counter, bufferidx, bufferslots, tfers)
-    
     process_data(tfers, buffer, buffer_counter, bufferidx)
 
     # eject tips where present
