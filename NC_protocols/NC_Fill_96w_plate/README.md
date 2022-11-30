@@ -27,6 +27,8 @@ A3,80.5
 ...
 ```
 
+The order of the rows is not relevant (any order will do)
+
 _The 'Position,Value' header line should not be altered as these names are used in the code_
 
 The volumes 
@@ -46,7 +48,7 @@ The volumes
 
 * place 1 empty plates in position  #1
 * NEST 12 Well Reservoir in position #4 with 6mL Tris in col#1
-  * _ALT:_ tube-rack in position #4 with eppendorf tubes in first row; buffer: [A1..A4] and empty waste tube [A6]
+  * _ALT:_ tube-rack in position #4 with eppendorf tubes in first row; buffer: [A1..A4]
 
 ### reservoir layout:
 * col#1: 6mL Tris buffer 10mM
@@ -65,7 +67,7 @@ The volumes
 4. Inject the _yaml_ and _CSV_ data in the template using the **[NC webtool](http://10.112.84.39/cgi-bin/OT2MakeProtocol/OT2MakeProtocol.php)** 
 5. Upload your protocol into the [OT App](https://opentrons.com/ot-app).
 5. Set up your deck according to the deck map.
-6. Calibrate your labware, tiprack and pipette using the OT App. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
+6. **Calibrate your labware, tiprack and pipette using the OT App**. For calibration tips, check out our [support articles](https://support.opentrons.com/en/collections/1559720-guide-for-getting-started-with-the-ot-2).
 7. Hit "Run".
 
 ### Additional Notes

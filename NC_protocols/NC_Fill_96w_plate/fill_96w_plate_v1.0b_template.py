@@ -137,6 +137,10 @@ def run(ctx: protocol_api.ProtocolContext):
             # is tip present?
             if not s_pipette.has_tip:
                 s_pipette.pick_up_tip()
+                
+            # increase clearance to avoid touching the tube/plate bottom
+            s_pipette.well_bottom_clearance.aspirate = 3
+            s_pipette.well_bottom_clearance.dispense = 1
 
             # transfer
             s_pipette.transfer(
@@ -163,6 +167,13 @@ def run(ctx: protocol_api.ProtocolContext):
     # create list of all volumes
     pos_list = [tfer['Position'] for tfer in tfers if tfer['Position']]
     vol_list = [round(float(tfer['Value']),2) for tfer in tfers if tfer['Value']]
+
+    # fail if tfers is longer than max 96 wells
+    if len(vol_list) > 96:
+        usrmsg = (
+            'this protocol can handle only up to 96 wells and you gave in ' + str(len(vol_list)) + ' data rows'
+            )
+        raise Exception(usrmsg)
 
     # check if all volumes are in accepted range [5:100]
     if min(vol_list) < float(min_vol) or max(vol_list) > float(max_vol):
