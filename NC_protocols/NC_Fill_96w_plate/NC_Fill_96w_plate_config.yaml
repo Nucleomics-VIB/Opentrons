@@ -4,6 +4,6 @@ params:
   res_vol: 1000.0
   min_vol: 2.0
   max_vol: 100.0
-  pspeed: 7.56
+  pspeed: 24.0
 csv:
   uploaded_csv: "data.csv"
