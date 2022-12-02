@@ -22,7 +22,6 @@ def get_values(*names):
         "dp_type":"biorad_96_wellplate_200ul_pcr",
         "tube_rack":"opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap",
         "buf_vol":"1000.0",
-        "smpl_vol":"2.5",
         "min_vol":"2.5",
         "max_dil":"20.0",
         "min_fin":"20.0",
@@ -38,7 +37,6 @@ def run(ctx: protocol_api.ProtocolContext):
         dp_type,
         tube_rack,
         buf_vol,
-        smpl_vol,
         min_vol,
         max_dil,
         min_fin,
@@ -51,7 +49,6 @@ def run(ctx: protocol_api.ProtocolContext):
         'dp_type',
         'tube_rack',
         'buf_vol',
-        'smpl_vol',
         'min_vol',
         'max_dil',
         'min_fin',
@@ -61,7 +58,6 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # set variable types
     buf_vol = float(buf_vol)         # max usable per eppendorf tube
-    smpl_vol = float(smpl_vol)       # min usable sample volume in any well
     min_vol = float(min_vol)         # min pipettable volume
     max_dil = float(max_dil)         # max direct dilution (one step)
     min_fin = float(min_fin)         # min volume in dest well

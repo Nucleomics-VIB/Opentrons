@@ -73,7 +73,6 @@ The user must edit the _dilute_96w_plate_config.yaml_ file to match the needs. E
 
 ```
 buf_vol    max usable per eppendorf tube
-smpl_vol   min usable sample volume in any well
 min_vol    min pipettable volume
 max_dil    max direct dilution (one step)
 min_fin    min volume in dest well
