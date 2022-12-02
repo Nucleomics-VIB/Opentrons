@@ -6,7 +6,7 @@ metadata = {
         'protocolName': 'dilute_96w_plate',
         'author': 'nucleomics@vib.be',
         'description': 'dilute wells from 96w_plate to new plate from CSV \
-            (+ intermediate dilution for > 20x concentrated samples)',
+            (+ optional intermediate dilution for concentrated samples)',
         'source': 'VIB Nucleomics',
         'apiLevel': '2.10'
         }
@@ -22,13 +22,13 @@ def get_values(*names):
         "dp_type":"biorad_96_wellplate_200ul_pcr",
         "tube_rack":"opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap",
         "buf_vol":"1000.0",
-        "smpl_vol":"2.5",
         "min_vol":"2.5",
+        "max_vol":"100.0",
         "max_dil":"20.0",
         "min_fin":"20.0",
         "pspeed":"24.0",
         "mix_times":"4",
-        "uploaded_csv":"Position,Dilution\\nA1,1.0\\nB1,5.0\\nC1,25.0\\nD1,80.0\\nE1,15.0\\nF1,10.0\\nG1,200.0"
+        "uploaded_csv":"Position,Volume,Dilution\\nA1,25.0,1.0\\nB1,5.0,5.0\\nC1,6.5,25.0\\nD1,12.5,80.0\\nE1,14.0,15.0\\nF1,7.5,10.0\\nG1,20,1.0"
         }""")
     return [_all_values[n] for n in names]
 
@@ -38,8 +38,8 @@ def run(ctx: protocol_api.ProtocolContext):
         dp_type,
         tube_rack,
         buf_vol,
-        smpl_vol,
         min_vol,
+        max_vol,
         max_dil,
         min_fin,
         pspeed,
@@ -51,8 +51,8 @@ def run(ctx: protocol_api.ProtocolContext):
         'dp_type',
         'tube_rack',
         'buf_vol',
-        'smpl_vol',
         'min_vol',
+        'max_vol',
         'max_dil',
         'min_fin',
         'pspeed',
@@ -60,17 +60,13 @@ def run(ctx: protocol_api.ProtocolContext):
         'uploaded_csv')
 
     # set variable types
-    buf_vol = float(buf_vol)         # max usable per eppendorf tube
-    smpl_vol = float(smpl_vol)       # min usable sample volume in any well
-    min_vol = float(min_vol)         # min pipettable volume
-    max_dil = float(max_dil)         # max direct dilution (one step)
-    min_fin = float(min_fin)         # min volume in dest well
-    pspeed = float(pspeed)           # pipette speed (standard 7.56)
-    mix_times = int(mix_times)       # mix sample and buffer after dispensing
-
-    ###########
-    # OT-2 deck
-    ###########
+    buf_vol = float(buf_vol)
+    min_vol = float(min_vol)
+    max_vol = float(max_vol)
+    max_dil = float(max_dil)
+    min_fin = float(min_fin)
+    pspeed = float(pspeed)
+    mix_times = int(mix_times)
 
     # light be
     ctx.set_rail_lights(True)
@@ -129,15 +125,15 @@ def run(ctx: protocol_api.ProtocolContext):
         'right',
         tip_racks=tips300)
 
-    ###########
-    # routines
-    ###########
+    # volume of used buffer
+    buffer_counter = float(0.0)
 
     # dilution occurs in the same dilution plate well address as the sample came from
     # this allows keeping the dilution plate in case more is needed for redo
 
-    # volume of used buffer
-    buffer_counter = float(0.0)
+    ###########
+    # routines
+    ###########
 
     def set_speeds(pip, aspeed, dspeed=None, bspeed=None):
         pip.flow_rate.aspirate = aspeed
@@ -152,32 +148,18 @@ def run(ctx: protocol_api.ProtocolContext):
     def reset_speeds(pip):
         pip.flow_rate.set_defaults(ctx.api_version)
 
-    ##################################
-    # get min two_vol volume to dilute
-    # and get at least min_fin uL final
-    ###################################
-    # max(min_vol, x)
-    def get_two_vol(min_vol, x):
-        if x >= min_vol:
-            return x
-        else:
-            return get_two_vol(x+0.1)
+    #################################################################
+    #  a volume of sample is directly transferred to the target plate
+    #################################################################
+    def direct_transfer_no_dilution(one_pos, one_vol, one_dil):
 
-    #########################################################################
-    #  a min_fin volume of sample is directly transferred to the target plate
-    #########################################################################
-    def direct_transfer_no_dilution(one_pos, one_vol):
-
-        # pipet sample undiluted to target plate
-        #ctx.comment(
-        #    '\n\n' + '#'*3 + ' transferring' + str(one_vol) +
-        #    'ul from ' + one_pos + ' to the target plate')
-
-        # debug
-        print("undiluted", one_pos, "vol:", str(one_vol), "dil:", "undiluted", "buffer:", "none")
+        # pipet one_vol to target plate
+        ctx.comment(
+            '\n\n' + '#'*3 + ' transferring ' + str(one_vol) +
+            'ul from ' + one_pos + ' to the target plate')
 
         # choose pipet
-        if min_fin <= 20.0:
+        if one_vol <= 20.0:
             usedpip = "p20"
             s_pipette = pipette20s
         else:
@@ -198,23 +180,17 @@ def run(ctx: protocol_api.ProtocolContext):
         # the tip has seen sample
         s_pipette.drop_tip()
 
-    ######################################################################
-    # enough sample is diluted in-place in the target plate to get min_fin
-    ######################################################################
-    def direct_transfer_one_dilution(one_pos, one_dil, min_vol, min_fin, mix_times):
+    ############################################################
+    # a volume of sample is diluted in-place in the target plate
+    ############################################################
+    def direct_transfer_one_dilution(one_pos, one_vol, one_dil, mix_times):
 
         nonlocal buffer_counter
         nonlocal buffer
         nonlocal bufferidx
 
-        # calculate sample volume needed to get >= min_fin AND be more than min_vol
-        req_vol = round(max(min_vol, min_fin / one_dil), 1)
-
         # calculate buffer volume needed
-        buffer_vol = round((one_dil - 1) * req_vol, 1)
-
-        # debug
-        print("one-step-dil", one_pos, "vol:", str(req_vol), "dil:", str(one_dil), "buffer:", str(buffer_vol))
+        buffer_vol = round((one_dil - 1) * one_vol, 1)
 
         # test if enough buffer in current tube_rack else take next
         buffer_counter += buffer_vol
@@ -246,7 +222,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
         # transfer sample to same well and mix_after
         # choose pipet
-        if float(req_vol) <= 20.0:
+        if float(one_vol) <= 20.0:
             usedpip = "p20"
             s_pipette = pipette20s
         else:
@@ -259,10 +235,10 @@ def run(ctx: protocol_api.ProtocolContext):
 
         # transfer sample in buffer and mix using the same tip
         # mix with the smallest of [20, buffer_vol+one_vol] -2 for safety
-        mix_vol = round(min(20.0, buffer_vol + req_vol) - 2.0, 1)
+        mix_vol = round(min(20.0, buffer_vol + one_vol) - 2.0, 1)
 
         s_pipette.transfer(
-            volume=req_vol,
+            volume=one_vol,
             source=source_plate.wells_by_name()[one_pos],
             dest=target_plate.wells_by_name()[one_pos],
             mix_after=(mix_times,mix_vol),
@@ -279,20 +255,16 @@ def run(ctx: protocol_api.ProtocolContext):
     # then dilute the dilution sqrt(one_dil) times 
     #   at same location in the target plate to get min_fin
     #######################################################
-    def step_transfer_two_dilutions(one_pos, one_dil, min_vol, max_dil, min_fin, mix_times):
+    def step_transfer_two_dilutions(one_pos, one_vol, one_dil, max_dil, mix_times, min_vol, min_fin):
 
         nonlocal buffer_counter
         nonlocal buffer
         nonlocal bufferidx
 
-        # pre-dilute math.sqrt(one_dil) times (20x -> 4.47x)
+        # pre-dilute math.sqrt(one_dil) times
         #   will be repeated a second time to come to one_dil final dilution
-        ser_dil = round(math.sqrt(one_dil), 1)
-        one_vol = min_vol
+        ser_dil = math.sqrt(one_dil)
         buffer_vol = round((ser_dil - 1) * one_vol, 1)
-
-        # debug
-        print("two-step-dil.1", one_pos, "vol:", str(one_vol), "dil:", str(ser_dil), "buffer:", str(buffer_vol))
 
         # test if enough buffer in current tube_rack else take next tube
         buffer_counter += buffer_vol
@@ -325,7 +297,7 @@ def run(ctx: protocol_api.ProtocolContext):
 
         # then add sample to it and mix
         # choose pipet
-        if float(min_vol) <= 20.0:
+        if float(one_vol) <= 20.0:
             usedpip = "p20"
             s_pipette = pipette20s
         else:
@@ -338,10 +310,10 @@ def run(ctx: protocol_api.ProtocolContext):
 
         # transfer sample in buffer and mix using the same tip
         # mix with the smallest of [20, buffer_vol+one_vol] -2 for safety
-        mix_vol = round(min(20, buffer_vol + min_vol) - 2, 1)
+        mix_vol = round(min(20, buffer_vol + one_vol) - 2, 1)
 
         s_pipette.transfer(
-            volume=min_vol,
+            volume=one_vol,
             source=source_plate.wells_by_name()[one_pos],
             dest=dilution_plate.wells_by_name()[one_pos],
             mix_after=(mix_times,mix_vol),
@@ -353,15 +325,19 @@ def run(ctx: protocol_api.ProtocolContext):
 
         # then add buffer to target plate for a second time math.sqrt(one_dil)
         # with a minimal final volume of min_fin uL
-        # and a minimal volume of min_vol
-        two_vol = round(max(min_vol, min_fin / ser_dil), 1)
+
+        # get min two_vol volume to dilute and get at least min_fin uL final
+        def get_two_vol(x):
+            if x >= min_vol:
+                return x
+            else:
+                return get_two_vol(x+0.1)
+        
+        two_vol = round(get_two_vol(min_fin / ser_dil), 1)
         
         # compute the required buffer volume to achieve this
         buffer_vol = round(two_vol * (ser_dil - 1), 1)
-
-        # debug
-        print("two-step-dil.2", one_pos, "vol:", str(two_vol), "dil:", str(ser_dil), "buffer:", str(buffer_vol))
-
+        
         # test if enough buffer in current tube_rack else take next
         buffer_counter += buffer_vol
         if buffer_counter > buf_vol:
@@ -424,36 +400,26 @@ def run(ctx: protocol_api.ProtocolContext):
     # csv as list of dictionaries
     tfers = [line for line in csv.DictReader(uploaded_csv.splitlines())]
 
-    # warn about the current expected volume taken from the sample plate
-    ctx.comment("## make sure samples that will NOT be diluted have more than " + 
-        str(min_fin) + 
-        " microL in the sample plate or abort here and adapt 'min_fin' in the yaml config")
-
+    # create a separate list from each column
+    # Position,Volume,Dilution
     pos_list = [tfer['Position'] for tfer in tfers if tfer['Position']]
+    vol_list = [round(float(tfer['Volume']),1) for tfer in tfers if tfer['Volume']]
     dil_list = [round(float(tfer['Dilution']),1) for tfer in tfers if tfer['Dilution']]
 
-    # check if all dilution factors are in accepted range [1:400]
-    if min(dil_list) < 1 or max(dil_list) > 400:
+    # check if all sample volumes are in accepted range [min_vol:max_vol]
+    if min(vol_list) < float(min_vol) or max(vol_list) > float(max_vol):
         usrmsg = (
-            'some dilution factor(s) in the csv are not in range of 1.0 - 400.0'
+            'some sample volume(s) in the csv are not in range of ' +
+            str(min_vol) + ' - ' + str(max_vol)
             )
         raise Exception(usrmsg)
 
     # calculate buffer needs for direct dilution
-    req_list = [max(min_vol, min_fin / b) for b in dil_list]
-    direct_buffer_vol = round(sum([a*(b-1) for a,b in zip(req_list, dil_list) if (b > 1 and b < max_dil)]), 1)
-    # debug
-    print("direct dilution volumes:", [a*(b-1) for a,b in zip(req_list, dil_list) if (b > 1 and b < max_dil)])
-    
+    direct_buffer_vol = round(sum([a*(b-1) for a,b in zip(vol_list, dil_list) if (b > 1 and b < max_dil)]), 1)
+
     # calculate buffer needs for 2-step dilution (same conditions in both steps)
     first_buffer_vol = round(sum([min_vol*(math.sqrt(b) - 1) for b in dil_list if (b >= max_dil)]), 1)
-    second_dil_vol = [max(min_vol, min_fin / round(math.sqrt(b),1)) for b in dil_list if (b >= max_dil)]
-    second_dil_list = [b for b in dil_list if (b >= max_dil)]
-    second_buffer_vol = round(sum([a*(math.sqrt(b) - 1) for a,b in zip(second_dil_vol, second_dil_list)]), 1)
-    # debug
-    print("first 2-dilution volumes:", [min_vol*(math.sqrt(b) - 1) for b in dil_list if (b >= max_dil)])
-    print("first 2-dilution sample volumes:", [max(min_vol, min_fin / round(math.sqrt(b),1)) for b in dil_list if (b >= max_dil)])
-    print("second 2-dilution volumes:", [a*(math.sqrt(b) - 1) for a,b in zip(second_dil_vol, second_dil_list)])
+    second_buffer_vol = first_buffer_vol
 
     # estimate total buffer volume (mL) based on sum of all imported volumes
     buffer_needed = direct_buffer_vol + first_buffer_vol + second_buffer_vol
@@ -469,19 +435,21 @@ def run(ctx: protocol_api.ProtocolContext):
 
     # loop in the CSV data and process 
     for tfer in tfers:
-        one_pos, one_dil = tfer.values()
+        one_pos, one_vol, one_dil = tfer.values()
 
-        # make one_dil float for good
+        # make them float for good
+        one_vol = float(one_vol)
         one_dil = float(one_dil)
 
         # pick the right routine depending on dilution
         if one_dil == 1.0:
-            direct_transfer_no_dilution(one_pos, min_fin)
+            direct_transfer_no_dilution(one_pos, one_vol, one_dil)
         elif one_dil > max_dil:
             # scale down input to min_vol
-            step_transfer_two_dilutions(one_pos, one_dil, min_vol, max_dil, min_fin, mix_times)
+            one_vol = min_vol
+            step_transfer_two_dilutions(one_pos, one_vol, one_dil, max_dil, mix_times, min_vol, min_fin)
         else:
-            direct_transfer_one_dilution(one_pos, one_dil, min_vol, min_fin, mix_times)
+            direct_transfer_one_dilution(one_pos, one_vol, one_dil, mix_times)
 
     # eject tips where present
     for pipette in [pipette20s, pipette300s]:

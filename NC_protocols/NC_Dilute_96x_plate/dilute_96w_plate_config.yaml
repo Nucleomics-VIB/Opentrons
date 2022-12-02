@@ -2,9 +2,9 @@ params:
   sp_type: "biorad_96_wellplate_200ul_pcr"
   tp_type: "biorad_96_wellplate_200ul_pcr"
   dp_type: "biorad_96_wellplate_200ul_pcr"
-  labware_reservoir: "nest_12_reservoir_15ml"
-  buf_vol: 6000.0
-  min_vol: 2
+  tube_rack: "opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap"
+  buf_vol: 1000.0
+  min_vol: 2.0
   max_vol: 100.0
   max_dil: 20.0
   min_fin: 10.0
