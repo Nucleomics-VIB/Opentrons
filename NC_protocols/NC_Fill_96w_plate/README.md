@@ -54,6 +54,31 @@ The volumes
 * col#1: 6mL Tris buffer 10mM
   * _ALT:_ first row: 1.2mL Tris buffer 10mM in each buffer tube
 
+### YAML config file
+
+The user must edit the _fill_96w_plate_*_config.yaml_ file to match the needs. Especially, the name of the CSV file must match the name of the file that will be injected in the NC web APP
+
+```
+res_vol    max usable buffer volume per eppendorf tube (tube_rack version)
+min_vol    min pipettable volume
+max_vol    min pipettable volume
+pspeed     pipette speed (standard 7.56)
+mix_times  mix sample and buffer after dispensing
+```
+
+Example _fill_96w_plate_config.yaml_ file
+
+```
+params:
+  plate_type: "biorad_96_wellplate_200ul_pcr"
+  tube_rack: "opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap"
+  res_vol: 1000.0
+  min_vol: 2.0
+  max_vol: 100.0
+  pspeed: 24.0
+csv:
+  uploaded_csv: "data.csv"
+```
 
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)

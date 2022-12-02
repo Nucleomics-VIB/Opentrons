@@ -17,17 +17,17 @@ metadata = {
 def get_values(*names):
     import json
     _all_values = json.loads("""{
-        "sp_type":"biorad_96_wellplate_200ul_pcr",
-        "tp_type":"biorad_96_wellplate_200ul_pcr",
-        "dp_type":"biorad_96_wellplate_200ul_pcr",
-        "tube_rack":"opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap",
-        "buf_vol":"1000.0",
-        "min_vol":"2.5",
-        "max_dil":"20.0",
-        "min_fin":"20.0",
-        "pspeed":"24.0",
-        "mix_times":"4",
-        "uploaded_csv":"Position,Dilution\\nA1,1.0\\nB1,5.0\\nC1,25.0\\nD1,80.0\\nE1,15.0\\nF1,10.0\\nG1,200.0"
+        "sp_type":"<sp_type>",
+        "tp_type":"<tp_type>",
+        "dp_type":"<dp_type>",
+        "tube_rack":"<tube_rack>",
+        "buf_vol":"<buf_vol>",
+        "min_vol":"<min_vol>",
+        "max_dil":"<max_dil>",
+        "min_fin":"<min_fin>",
+        "pspeed":"<pspeed>",
+        "mix_times":"<mix_times>",
+        "uploaded_csv":"<uploaded_csv>"
         }""")
     return [_all_values[n] for n in names]
 
@@ -422,6 +422,13 @@ def run(ctx: protocol_api.ProtocolContext):
 
     pos_list = [tfer['Position'] for tfer in tfers if tfer['Position']]
     dil_list = [round(float(tfer['Dilution']),1) for tfer in tfers if tfer['Dilution']]
+
+    # fail if tfers is longer than max 96 wells
+    if len(pos_list) > 96:
+        usrmsg = (
+            'this protocol can handle only up to 96 wells and you gave in ' + str(len(pos_list)) + ' data rows'
+            )
+        raise Exception(usrmsg)
 
     # check if all dilution factors are in accepted range [1:400]
     if min(dil_list) < 1 or max(dil_list) > 400:

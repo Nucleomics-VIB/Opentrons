@@ -72,7 +72,7 @@ The 'Position,Dilution' header line should not be altered as these names are use
 The user must edit the _dilute_96w_plate_config.yaml_ file to match the needs. Especially, the name of the CSV file must match the name of the file that will be injected in the NC web APP
 
 ```
-buf_vol    max usable per eppendorf tube
+buf_vol    max usable buffer volume per eppendorf tube
 min_vol    min pipettable volume
 max_dil    max direct dilution (one step)
 min_fin    min volume in dest well
