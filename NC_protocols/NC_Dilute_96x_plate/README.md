@@ -19,7 +19,6 @@ The program computes volumes based on the provided dilution factors in order to:
 * minimize the use of the start material
 * distribute at least _min_fin_ (20) microliters in each well of the destination plate
 
-
 ### IMPORTANT NOTES ###
 
 The Source plate should contain at least _min_fin_ (20) microL samples in all wells that will be transferred without dilution
@@ -44,9 +43,9 @@ A3,80.5
 
 The number of wells in the CSV and their order are not relevant (any order will do) as long as there are not more than 96 wells in the CSV
 
-_The 'Position,Dilution' header line should not be altered as these names are used in the code_
+The 'Position,Dilution' header line should not be altered as these names are used in the code
 
-The volumes 
+
 ---
 ## Materials
 
@@ -70,7 +69,19 @@ The volumes
 
 ### YAML config file
 
-The user must edit the dilute_96w_plate_config.yaml file to match the needs. Especially, the name of the CSV file must match the name of the file that will be injected in the NC web APP
+The user must edit the _dilute_96w_plate_config.yaml_ file to match the needs. Especially, the name of the CSV file must match the name of the file that will be injected in the NC web APP
+
+```
+buf_vol    max usable per eppendorf tube
+smpl_vol   min usable sample volume in any well
+min_vol    min pipettable volume
+max_dil    max direct dilution (one step)
+min_fin    min volume in dest well
+pspeed     pipette speed (standard 7.56)
+mix_times  mix sample and buffer after dispensing
+```
+
+Example _dilute_96w_plate_config.yaml_ file
 
 ```
 params:
@@ -87,18 +98,6 @@ params:
   mix_times: 4
 csv:
   uploaded_csv: "data.csv"
-```
-
-With:
-
-```
-buf_vol    max usable per eppendorf tube
-smpl_vol   min usable sample volume in any well
-min_vol    min pipettable volume
-max_dil    max direct dilution (one step)
-min_fin    min volume in dest well
-pspeed     pipette speed (standard 7.56)
-mix_times  mix sample and buffer after dispensing
 ```
 
 ### Robot

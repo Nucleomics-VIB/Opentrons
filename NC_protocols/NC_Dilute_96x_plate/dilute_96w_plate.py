@@ -168,13 +168,8 @@ def run(ctx: protocol_api.ProtocolContext):
     #########################################################################
     def direct_transfer_no_dilution(one_pos, one_vol):
 
-        # pipet sample undiluted to target plate
-        #ctx.comment(
-        #    '\n\n' + '#'*3 + ' transferring' + str(one_vol) +
-        #    'ul from ' + one_pos + ' to the target plate')
-
         # debug
-        print("undiluted", one_pos, "vol:", str(one_vol), "dil:", "undiluted", "buffer:", "none")
+        # print("undiluted", one_pos, "vol:", str(one_vol), "dil:", "undiluted", "buffer:", "none")
 
         # choose pipet
         if min_fin <= 20.0:
@@ -214,7 +209,7 @@ def run(ctx: protocol_api.ProtocolContext):
         buffer_vol = round((one_dil - 1) * req_vol, 1)
 
         # debug
-        print("one-step-dil", one_pos, "vol:", str(req_vol), "dil:", str(one_dil), "buffer:", str(buffer_vol))
+        # print("one-step-dil", one_pos, "vol:", str(req_vol), "dil:", str(one_dil), "buffer:", str(buffer_vol))
 
         # test if enough buffer in current tube_rack else take next
         buffer_counter += buffer_vol
@@ -292,7 +287,7 @@ def run(ctx: protocol_api.ProtocolContext):
         buffer_vol = round((ser_dil - 1) * one_vol, 1)
 
         # debug
-        print("two-step-dil.1", one_pos, "vol:", str(one_vol), "dil:", str(ser_dil), "buffer:", str(buffer_vol))
+        # print("two-step-dil.1", one_pos, "vol:", str(one_vol), "dil:", str(ser_dil), "buffer:", str(buffer_vol))
 
         # test if enough buffer in current tube_rack else take next tube
         buffer_counter += buffer_vol
@@ -360,7 +355,7 @@ def run(ctx: protocol_api.ProtocolContext):
         buffer_vol = round(two_vol * (ser_dil - 1), 1)
 
         # debug
-        print("two-step-dil.2", one_pos, "vol:", str(two_vol), "dil:", str(ser_dil), "buffer:", str(buffer_vol))
+        # print("two-step-dil.2", one_pos, "vol:", str(two_vol), "dil:", str(ser_dil), "buffer:", str(buffer_vol))
 
         # test if enough buffer in current tube_rack else take next
         buffer_counter += buffer_vol
@@ -442,18 +437,20 @@ def run(ctx: protocol_api.ProtocolContext):
     # calculate buffer needs for direct dilution
     req_list = [max(min_vol, min_fin / b) for b in dil_list]
     direct_buffer_vol = round(sum([a*(b-1) for a,b in zip(req_list, dil_list) if (b > 1 and b < max_dil)]), 1)
+
     # debug
-    print("direct dilution volumes:", [a*(b-1) for a,b in zip(req_list, dil_list) if (b > 1 and b < max_dil)])
+    # print("direct dilution volumes:", [a*(b-1) for a,b in zip(req_list, dil_list) if (b > 1 and b < max_dil)])
     
     # calculate buffer needs for 2-step dilution (same conditions in both steps)
     first_buffer_vol = round(sum([min_vol*(math.sqrt(b) - 1) for b in dil_list if (b >= max_dil)]), 1)
     second_dil_vol = [max(min_vol, min_fin / round(math.sqrt(b),1)) for b in dil_list if (b >= max_dil)]
     second_dil_list = [b for b in dil_list if (b >= max_dil)]
     second_buffer_vol = round(sum([a*(math.sqrt(b) - 1) for a,b in zip(second_dil_vol, second_dil_list)]), 1)
+
     # debug
-    print("first 2-dilution volumes:", [min_vol*(math.sqrt(b) - 1) for b in dil_list if (b >= max_dil)])
-    print("first 2-dilution sample volumes:", [max(min_vol, min_fin / round(math.sqrt(b),1)) for b in dil_list if (b >= max_dil)])
-    print("second 2-dilution volumes:", [a*(math.sqrt(b) - 1) for a,b in zip(second_dil_vol, second_dil_list)])
+    # print("first 2-dilution volumes:", [min_vol*(math.sqrt(b) - 1) for b in dil_list if (b >= max_dil)])
+    # print("first 2-dilution sample volumes:", [max(min_vol, min_fin / round(math.sqrt(b),1)) for b in dil_list if (b >= max_dil)])
+    # print("second 2-dilution volumes:", [a*(math.sqrt(b) - 1) for a,b in zip(second_dil_vol, second_dil_list)])
 
     # estimate total buffer volume (mL) based on sum of all imported volumes
     buffer_needed = direct_buffer_vol + first_buffer_vol + second_buffer_vol
