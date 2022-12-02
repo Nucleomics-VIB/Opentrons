@@ -7,7 +7,7 @@ params:
   min_vol: 2.0
   max_vol: 100.0
   max_dil: 20.0
-  min_fin: 10.0
+  min_fin: 20.0
   pspeed: 24.0
   mix_times: 4
 csv:

@@ -32,10 +32,12 @@ A3,80.5
 ...
 ```
 
-* _A1,1.0_ will lead to transfer of _min_fin_ microliters of pure sample to the destination plate
-* _A2,18.3_ will lead to direct 18.3x dilution of the sample in the destination plate (2.5 microL sample + 43.25 microL buffer)
-* _A3,80.5_ will lead to a first 8.97x dilution (sqrt(80.5)) of 2.5 microL sample with 19.93 microL buffer in the _dilution plate_ (pos A3, final volume 22.4 microL)
-  * followed by the dilution of 2.5 microL of the first dilution with 19.93 microL buffer in the _destination plate_ (pos A3, final volume 22.4 microL)
+* _A1,1.0_ will lead to transfer of _min_fin_ (20) microliters of pure sample to the destination plate
+* _A2,18.3_ will lead to direct 18.3x dilution of the sample in the destination plate (min_vol=2.5 microL sample + 43.25 microL buffer)
+* _A3,80.5_ will lead to a first 8.97x dilution (sqrt(80.5)) of min_vol=2.5 microL sample with 19.93 microL buffer in the _dilution plate_ 
+  (pos A3, final volume 22.4 microL)
+  followed by the dilution of min_vol=2.5 microL of the first dilution with 19.93 microL buffer in the _destination plate_ 
+  (pos A3, final volume 22.4 microL)
 
 The number of wells in the CSV and their order are not relevant (any order will do) as long as there are not more than 96 wells in the CSV
 
@@ -77,7 +79,7 @@ params:
   min_vol: 2.0
   max_vol: 100.0
   max_dil: 20.0
-  min_fin: 10.0
+  min_fin: 20.0
   pspeed: 24.0
   mix_times: 4
 csv:
