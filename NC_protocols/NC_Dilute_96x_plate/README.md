@@ -32,8 +32,9 @@ A3,80.5
 ...
 ```
 
-* _A1,1.0_ will lead to transfer of _min_fin_ (20) microliters of pure sample to the destination plate
-* _A2,18.3_ will lead to direct 18.3x dilution of the sample in the destination plate (min_vol=2.5 microL sample + 43.25 microL buffer)
+* _A1,1.0_ will lead to transfer of _min_fin_ (20) microliters of pure sample to the _destination plate_
+* _A2,18.3_ will lead to direct 18.3x dilution of the sample in the _destination plate_</br>
+  (min_vol=2.5 microL sample + 43.25 microL buffer)
 * _A3,80.5_ will lead to a first 8.97x dilution (sqrt(80.5)) of min_vol=2.5 microL sample with 19.93 microL buffer in the _dilution plate_</br>
   (pos A3, final volume 22.4 microL)</br>
   followed by the dilution of min_vol=2.5 microL of the first dilution with 19.93 microL buffer in the _destination plate_</br>
