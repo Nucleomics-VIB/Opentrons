@@ -11,7 +11,7 @@
 ## Description
 
 This protocol normalizes samples from a 96 well sample plate to a destination 96 well plate.
-When dilution is less than max_dil (20), the samples are first diluted _sqrt(dil)_ times in a dilution plate then a volume is taken and diluted again _sqrt(dil)_ times to the destination plate.
+When dilution is less than _max_dil_ (20), the samples are first diluted _sqrt(dil)_ times in a dilution plate then a volume is taken and diluted again _sqrt(dil)_ times to the destination plate.
 
 The program computes volumes based on the provided dilution factors in order to:
 
@@ -20,7 +20,9 @@ The program computes volumes based on the provided dilution factors in order to:
 * distribute at least _min_fin_ (20) microliters in each well of the destination plate
 
 
-### IMPORTANT NOTE ###
+### IMPORTANT NOTES ###
+
+The Source plate should contain at least _min_fin_ (20) microL samples in all wells that will be transferred without dilution
 
 The CSV data should be saved as a comma-separated text file (!! _Windows user_ : ',' => not ';' !!) with '_Position_' being well addresses (A1) and all '_Dilution_' ('Value') given with a dot => '.' as decimal separator as in the following example
 
