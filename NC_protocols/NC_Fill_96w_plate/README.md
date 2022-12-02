@@ -66,7 +66,7 @@ pspeed     pipette speed (standard 7.56)
 mix_times  mix sample and buffer after dispensing
 ```
 
-Example _fill_96w_plate_config.yaml_ file
+Example _fill_96w_plate_tuberack_config.yaml_ file
 
 ```
 params:
