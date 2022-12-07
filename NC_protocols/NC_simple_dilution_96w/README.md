@@ -1,4 +1,4 @@
-# NC repooling with dilution
+# Simple dilution 96w
 
 ### Authors
 [VIB Nucleomics Core](https://www.nucleomics.be)
@@ -9,26 +9,31 @@
 
 ## Description
 
-This protocol takes samples from 96well plates and pools a given quantity (or dilution thereof) to a pool tube. The Pool is later concentrated and QC'ed before processing in a Illumina library prep workflow.
+This protocol takes samples from 96well plates applies the same fixed dilution factor to all wells to produce a diluted plate. 
 
+When the dilution factor is more than 20x, an intermediate dilution step at 1:10 is made to an intermediate plate, followed by the remaining dilution to the final plate.
 
 ---
 ## Materials
 
-* 5x [Bio-Rad 96 Well Plate 200 µL PCR (hsp9601)](https://labware.opentrons.com/biorad_96_wellplate_200ul_pcr?_gl=1*1a9qcug*_gcl_aw*R0NMLjE2MzE4MDAxNDUuQ2owS0NRanc4SWFHQmhDSEFSSXNBR0lSUllvamg1ZkhXczd1RUt2QTRLRE12cGE5WnBTbndpSmxybkxnVU54QTVJVEowRm04V2txTzhxTWFBbWxIRUFMd193Y0I.*_ga*MjA3NDg2NzQ1MC4xNjMwMDczMjAw*_ga_GNSMNLW4RY*MTYzMTc5OTI5Ny40My4xLjE2MzE4MDAyNTYuMA..)
-* [opentrons_15_tuberack_falcon_15ml_conical](https://labware.opentrons.com/opentrons_15_tuberack_falcon_15ml_conical?category=tubeRack) - 2x 15ml tubes needed
-* [P20 single-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
-* 5x [Opentrons 96 Filter Tip Rack 20 µL](https://labware.opentrons.com/opentrons_96_filtertiprack_20ul?category=tipRack)
+* 3x [Bio-Rad 96 Well Plate 200 µL PCR (hsp9601)](https://labware.opentrons.com/biorad_96_wellplate_200ul_pcr?_gl=1*1a9qcug*_gcl_aw*R0NMLjE2MzE4MDAxNDUuQ2owS0NRanc4SWFHQmhDSEFSSXNBR0lSUllvamg1ZkhXczd1RUt2QTRLRE12cGE5WnBTbndpSmxybkxnVU54QTVJVEowRm04V2txTzhxTWFBbWxIRUFMd193Y0I.*_ga*MjA3NDg2NzQ1MC4xNjMwMDczMjAw*_ga_GNSMNLW4RY*MTYzMTc5OTI5Ny40My4xLjE2MzE4MDAyNTYuMA..)
+* 1x [nest_12_reservoir_15ml](https://labware.opentrons.com/nest_12_reservoir_15ml?category=tubeRack) - 12 channel reservoir
+* 1x [P20 single-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
+* 1x [P200 single-channel electronic pipette](https://shop.opentrons.com/collections/ot-2-pipettes)
+* 2x [Opentrons 96 Filter Tip Rack 20 µL](https://labware.opentrons.com/opentrons_96_filtertiprack_20ul?category=tipRack)
+* 1x [Opentrons 96 Filter Tip Rack 200 µL](https://labware.opentrons.com/opentrons_96_filtertiprack_20ul?category=tipRack)
 
 ---
 ## Setup
 
-* place up to 4 sample plates with DNA samples in positions #[5,6,2,3] (in that order)
-* place the empty dilution plate in position #4
+* place the DNA input pate with DNA on 'magnetic module gen2' in position #1
+* place the intermediate dilution plate in position #2
+* place the final plate in position #3
 
-### tube rack layout (position #1):
-* A1: 15ml tube with Tris buffer for dilution (0.5ml unless more required)
-* C5: 15ml tube for pool
+
+### container (position #1):
+*  1: solvant in sufficient quantity to process the whole plate (15ml)
+* 12: liquid waste
 
 ### Robot
 * [OT-2](https://opentrons.com/ot-2)
