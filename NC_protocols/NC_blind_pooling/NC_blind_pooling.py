@@ -14,7 +14,6 @@ metadata = {
 # template version 1.1; 2021_09_28 (SP)
 # edit date 2021-09-28
 
-
 def get_values(*names):
     import json
     _all_values = json.loads("""{
