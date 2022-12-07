@@ -21,7 +21,7 @@ metadata = {
 ##  res_vol: 1000.0
 ##  min_vol: 2.0
 ##  max_vol: 100.0
-##  pspeed: 7.56
+##  pspeed: 7.56 (24)
 ##csv:
 ##  uploaded_csv: "data.csv"
 
