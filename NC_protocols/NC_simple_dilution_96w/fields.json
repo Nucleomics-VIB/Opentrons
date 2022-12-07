@@ -1,0 +1,8 @@
+[
+    {
+        "type": "float",
+        "label": "dilution factor",
+        "name": "dil_fact",
+        "default": 10.0
+    }
+]
